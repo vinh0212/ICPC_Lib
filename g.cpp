@@ -7,6 +7,8 @@ ll n, res[500005] = {0}, dem1 = 0, sum[500005];
 string s;
 vector<ll> v;
 
+
+
 ll tinh(ll l, ll r){
     if(l == 0) return sum[r];
     return sum[r] - sum[l-1];
