@@ -2,4 +2,4 @@ title: "My CP Archive"
 description: "A collection of Competitive Programming problems and solutions"
 baseurl: ""
 url: "https://vinh0212.github.io"
-remote_theme: minimal-master
+theme: jekyll-theme-minimal
