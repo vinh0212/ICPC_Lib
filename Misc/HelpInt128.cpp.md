@@ -1,0 +1,59 @@
+---
+data:
+  _extendedDependsOn: []
+  _extendedRequiredBy: []
+  _extendedVerifiedWith: []
+  _isVerificationFailed: false
+  _pathExtension: cpp
+  _verificationStatusIcon: ':warning:'
+  attributes:
+    links: []
+  bundledCode: "#line 1 \"Misc/HelpInt128.cpp\"\n// i128 helper functions {{{\nusing\
+    \ i128 = __int128_t;\ni128 str2i128(std::string str) {\n    i128 ret = 0;\n  \
+    \  bool minus = false;\n    for (auto c : str) {\n        if (c == '-')\n    \
+    \        minus = true;\n        else\n            ret = ret * 10 + c - '0';\n\
+    \    }\n    return minus ? -ret : ret;\n}\nstd::istream &operator>>(std::istream\
+    \ &is, i128 &x) {\n    std::string s;\n    return is >> s, x = str2i128(s), is;\n\
+    }\nstd::ostream &operator<<(std::ostream &os, const i128 &x) {\n    i128 tmp =\
+    \ x;\n    if (tmp == 0) return os << 0;\n    std::vector<int> ds;\n    if (tmp\
+    \ < 0) {\n        os << '-';\n        while (tmp) {\n            int d = tmp %\
+    \ 10;\n            if (d > 0) d -= 10;\n            ds.emplace_back(-d), tmp =\
+    \ (tmp - d) / 10;\n        }\n    } else {\n        while (tmp) ds.emplace_back(tmp\
+    \ % 10), tmp /= 10;\n    }\n    std::reverse(ds.begin(), ds.end());\n    for (auto\
+    \ i : ds) os << i;\n    return os;\n}\ni128 my_abs(i128 n) {\n    if (n < 0) return\
+    \ -n;\n    return n;\n}\ni128 gcd(i128 a, i128 b) {\n    if (b == 0) return a;\n\
+    \    return gcd(b, a % b);\n}\n// Count trailing zeroes\nint ctz128(i128 n) {\n\
+    \    if (!n) return 128;\n \n    if (!static_cast<uint64_t>(n)) {\n        return\
+    \ __builtin_ctzll(static_cast<uint64_t>(n >> 64)) + 64;\n    } else {\n      \
+    \  return __builtin_ctzll(static_cast<uint64_t>(n));\n    }\n}\n// }}}\n"
+  code: "// i128 helper functions {{{\nusing i128 = __int128_t;\ni128 str2i128(std::string\
+    \ str) {\n    i128 ret = 0;\n    bool minus = false;\n    for (auto c : str) {\n\
+    \        if (c == '-')\n            minus = true;\n        else\n            ret\
+    \ = ret * 10 + c - '0';\n    }\n    return minus ? -ret : ret;\n}\nstd::istream\
+    \ &operator>>(std::istream &is, i128 &x) {\n    std::string s;\n    return is\
+    \ >> s, x = str2i128(s), is;\n}\nstd::ostream &operator<<(std::ostream &os, const\
+    \ i128 &x) {\n    i128 tmp = x;\n    if (tmp == 0) return os << 0;\n    std::vector<int>\
+    \ ds;\n    if (tmp < 0) {\n        os << '-';\n        while (tmp) {\n       \
+    \     int d = tmp % 10;\n            if (d > 0) d -= 10;\n            ds.emplace_back(-d),\
+    \ tmp = (tmp - d) / 10;\n        }\n    } else {\n        while (tmp) ds.emplace_back(tmp\
+    \ % 10), tmp /= 10;\n    }\n    std::reverse(ds.begin(), ds.end());\n    for (auto\
+    \ i : ds) os << i;\n    return os;\n}\ni128 my_abs(i128 n) {\n    if (n < 0) return\
+    \ -n;\n    return n;\n}\ni128 gcd(i128 a, i128 b) {\n    if (b == 0) return a;\n\
+    \    return gcd(b, a % b);\n}\n// Count trailing zeroes\nint ctz128(i128 n) {\n\
+    \    if (!n) return 128;\n \n    if (!static_cast<uint64_t>(n)) {\n        return\
+    \ __builtin_ctzll(static_cast<uint64_t>(n >> 64)) + 64;\n    } else {\n      \
+    \  return __builtin_ctzll(static_cast<uint64_t>(n));\n    }\n}\n// }}}"
+  dependsOn: []
+  isVerificationFile: false
+  path: Misc/HelpInt128.cpp
+  requiredBy: []
+  timestamp: '2024-11-07 00:17:58+07:00'
+  verificationStatus: LIBRARY_NO_TESTS
+  verifiedWith: []
+documentation_of: Misc/HelpInt128.cpp
+layout: document
+redirect_from:
+- /library/Misc/HelpInt128.cpp
+- /library/Misc/HelpInt128.cpp.html
+title: Misc/HelpInt128.cpp
+---
