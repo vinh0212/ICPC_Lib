@@ -19,12 +19,7 @@ jobs:
     - name: Install dependencies
       run: pip3 install -U git+https://github.com/online-judge-tools/verification-helper.git
 
-    # required only if you want to verify Haskell code
-    - name: Install dependencies (Haskell)
-      uses: haskell-actions/setup@v2
-      with:
-        ghc-version: '8.8.4'
-        cabal-version: '3.0.0.0'
+   
 
     # required only if you want to verify Java code
     - name: Install dependencies (Java)
@@ -52,33 +47,11 @@ jobs:
       with:
         ruby-version: '3.0'
 
-    # required only if you want to verify Nim code
-    - name: Install dependencies (Nim)
-      uses: jiro4989/setup-nim-action@v1
-      with:
-        nim-version: '1.6.14'
-        repo-token: ${{ secrets.GITHUB_TOKEN }}
-
     - name: Set up Rust (1.70.0)
       run: |
         rustup set profile minimal
         rustup install 1.70.0
         rustup override set nightly
-
-    # required by cargo-udeps
-    - name: Set up Rust (nightly)
-      run: |
-        rustup set profile minimal
-        rustup install nightly
-        rustup override set nightly
-
-    # required only if you set `languages.rust.list_dependencies_backend.kind` to `"cargo-udeps"`
-    - name: Install cargo-udeps for Rust
-      uses: baptiste0928/cargo-install@v2
-      with:
-        crate: cargo-udeps
-        version: '0.1.44'
-        args: --debug
 
     - name: Run tests
       env:
