@@ -129,7 +129,7 @@ data:
   isVerificationFile: false
   path: Algorithm/Mo's Algorithm on Trees.cpp
   requiredBy: []
-  timestamp: '2024-11-06 17:19:06+00:00'
+  timestamp: '2024-11-07 04:33:30+00:00'
   verificationStatus: LIBRARY_NO_TESTS
   verifiedWith: []
 documentation_of: Algorithm/Mo's Algorithm on Trees.cpp

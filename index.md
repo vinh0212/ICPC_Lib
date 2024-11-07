@@ -4,9 +4,6 @@ data:
   - name: Algorithm
     pages:
     - icon: ':warning:'
-      path: Algorithm/Fenwick.cpp
-      title: Algorithm/Fenwick.cpp
-    - icon: ':warning:'
       path: Algorithm/Mo's Algorithm on Trees.cpp
       title: Algorithm/Mo's Algorithm on Trees.cpp
     - icon: ':warning:'
@@ -23,23 +20,20 @@ data:
       path: Data Structrue/BinaryTrie.cpp
       title: Data Structrue/BinaryTrie.cpp
     - icon: ':warning:'
+      path: Data Structrue/Fenwick.cpp
+      title: Data Structrue/Fenwick.cpp
+    - icon: ':warning:'
       path: Data Structrue/LCA.cpp
       title: Data Structrue/LCA.cpp
     - icon: ':warning:'
       path: Data Structrue/LCA_RMQ.cpp
       title: Data Structrue/LCA_RMQ.cpp
     - icon: ':warning:'
-      path: Data Structrue/LazySegTree.cpp
-      title: Data Structrue/LazySegTree.cpp
-    - icon: ':warning:'
       path: Data Structrue/LinkCutTree.cpp
       title: Data Structrue/LinkCutTree.cpp
     - icon: ':warning:'
       path: Data Structrue/OrderedSet.cpp
       title: Data Structrue/OrderedSet.cpp
-    - icon: ':warning:'
-      path: Data Structrue/RMQ.cpp
-      title: Data Structrue/RMQ.cpp
     - icon: ':warning:'
       path: Data Structrue/RangeSet.cpp
       title: Data Structrue/RangeSet.cpp
@@ -66,8 +60,8 @@ data:
   - name: Graph
     pages:
     - icon: ':warning:'
-      path: Graph/BFS.cpp
-      title: Graph/BFS.cpp
+      path: Graph/BFS-DFS.cpp
+      title: Graph/BFS-DFS.cpp
     - icon: ':warning:'
       path: Graph/BiconnectedComp.cpp
       title: Graph/BiconnectedComp.cpp
@@ -80,6 +74,9 @@ data:
     - icon: ':warning:'
       path: Graph/EulerPath.cpp
       title: Graph/EulerPath.cpp
+    - icon: ':warning:'
+      path: Graph/MST-kruskal.cpp
+      title: Graph/MST-kruskal.cpp
     - icon: ':warning:'
       path: Graph/MaxClique.cpp
       title: Graph/MaxClique.cpp
