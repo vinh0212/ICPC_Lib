@@ -3,113 +3,137 @@ using namespace std;
 
 typedef vector<int> vi;
 
-class SegmentTree {                              // OOP style
+class SegmentTree
+{
 private:
-  int n;                                         // n = (int)A.size()
-  vi A, st, lazy;                                // the arrays
+    int n;          // n = (int)A.size()
+    vi A, st, lazy; // the arrays
 
-  int l(int p) { return  p<<1; }                 // go to left child
-  int r(int p) { return (p<<1)+1; }              // go to right child
+    int lc(int p) { return p << 1; }       // go to left child
+    int rc(int p) { return (p << 1) + 1; } // go to right child
 
-  int conquer(int a, int b) {
-    if (a == -1) return b;                       // corner case
-    if (b == -1) return a;
-    return min(a, b);                            // RMQ
-  }
-
-  void build(int p, int L, int R) {              // O(n)
-    if (L == R)
-      st[p] = A[L];                              // base case
-    else {
-      int m = (L+R)/2;
-      build(l(p), L  , m);
-      build(r(p), m+1, R);
-      st[p] = conquer(st[l(p)], st[r(p)]);
+    int conquer(int a, int b)
+    {
+        if (a == -1)
+            return b; // corner case
+        if (b == -1)
+            return a;
+        return min(a, b); // choose type of query here, maybe max, sum, etc
     }
-  }
 
-  void propagate(int p, int L, int R) {
-    if (lazy[p] != -1) {                         // has a lazy flag
-      st[p] = lazy[p];                           // [L..R] has same value
-      if (L != R)                                // not a leaf
-        lazy[l(p)] = lazy[r(p)] = lazy[p];       // propagate downwards
-      else                                       // L == R, a single index
-        A[L] = lazy[p];                          // time to update this
-      lazy[p] = -1;                              // erase lazy flag
+    void build(int p, int l, int r)
+    { // O(n)
+        if (l == r)
+            st[p] = A[l]; // base case
+        else
+        {
+            int mid = (l + r) / 2;
+            build(lc(p), l, mid);
+            build(rc(p), mid + 1, r);
+            st[p] = conquer(st[lc(p)], st[rc(p)]);
+        }
     }
-  }
 
-  int RMQ(int p, int L, int R, int i, int j) {   // O(log n)
-    propagate(p, L, R);                          // lazy propagation
-    if (i > j) return -1;                        // infeasible
-    if ((L >= i) && (R <= j)) return st[p];      // found the segment
-    int m = (L+R)/2;
-    return conquer(RMQ(l(p), L  , m, i          , min(m, j)),
-                   RMQ(r(p), m+1, R, max(i, m+1), j        ));
-  }
+    void propagate(int p, int l, int r)
+    {
+        if (lazy[p] != -1)
+        {                                          // has a lazy flag
+            st[p] = lazy[p];                       // [l..r] has same value
+            if (l != r)                            // not a leaf
+                lazy[lc(p)] = lazy[rc(p)] = lazy[p]; // propagate downwards
+            else                                   // l == r, a single index
+                A[l] = lazy[p];                    // time to update this
+            lazy[p] = -1;                          // erase lazy flag
+        }
+    }
 
-  void update(int p, int L, int R, int i, int j, int val) { // O(log n)
-    propagate(p, L, R);                          // lazy propagation
-    if (i > j) return;
-    if ((L >= i) && (R <= j)) {                  // found the segment
-      lazy[p] = val;                             // update this
-      propagate(p, L, R);                        // lazy propagation
+    int query(int p, int l, int r, int i, int j)
+    {                       // O(log n)
+        propagate(p, l, r); // lazy propagation
+        if (i > j)
+            return -1; // infeasible
+        if ((l >= i) && (r <= j))
+            return st[p]; // found the segment
+        int mid = (l + r) / 2;
+        return conquer(query(lc(p), l, mid, i, min(mid, j)),
+                       query(rc(p), mid + 1, r, max(i, mid + 1), j));
     }
-    else {
-      int m = (L+R)/2;
-      update(l(p), L  , m, i          , min(m, j), val);
-      update(r(p), m+1, R, max(i, m+1), j        , val);
-      int lsubtree = (lazy[l(p)] != -1) ? lazy[l(p)] : st[l(p)];
-      int rsubtree = (lazy[r(p)] != -1) ? lazy[r(p)] : st[r(p)];
-      st[p] = conquer(lsubtree, rsubtree);
+
+    void update(int p, int l, int r, int i, int j, int val)
+    {                       // O(log n)
+        propagate(p, l, r); // lazy propagation
+        if (i > j)
+            return;
+        if ((l >= i) && (r <= j)) //[l,r] in [i,j]
+        {                       // found the segment
+            lazy[p] = val;      // update this
+            propagate(p, l, r); // lazy propagation
+        }
+        else
+        {
+            int mid = (l + r) / 2;
+            update(lc(p), l, mid, i, min(mid, j), val);
+            update(rc(p), mid + 1, r, max(i, mid + 1), j, val);
+            int lsubtree, rsubtree;
+            if (lazy[lc(p)] != -1)
+                lsubtree = lazy[lc(p)];
+            else
+                lsubtree = st[lc(p)];
+            if (lazy[rc(p)] != -1)
+                rsubtree = lazy[rc(p)];
+            else
+                rsubtree = st[rc(p)];
+            st[p] = conquer(lsubtree, rsubtree);
+        }
     }
-  }
 
 public:
-  SegmentTree(int sz) : n(sz), A(n), st(4*n), lazy(4*n, -1) {}
+    SegmentTree(int sz) : n(sz), A(n), st(4 * n), lazy(4 * n, -1) {}
 
-  SegmentTree(const vi &initialA) : SegmentTree((int)initialA.size()) {
-    A = initialA;
-    build(1, 0, n-1);
-  }
+    SegmentTree(const vi &initialA) : SegmentTree((int)initialA.size())
+    {
+        A = initialA;
+        build(1, 0, n - 1);
+    }
 
-  void update(int i, int j, int val) { update(1, 0, n-1, i, j, val); }
+    void update(int i, int j, int val) { update(1, 0, n - 1, i, j, val); }
 
-  int RMQ(int i, int j) { return RMQ(1, 0, n-1, i, j); }
+    int query(int i, int j) { return query(1, 0, n - 1, i, j); }
 };
 
-//Example Code
+// Example Code
 
-int main() {
-  vi A = {18, 17, 13, 19, 15, 11, 20, 99};       // make n a power of 2
-  SegmentTree st(A);
+int main()
+{
+    vi A = {18, 17, 13, 19, 15, 11, 20, 99}; // make n a power of 2
+    SegmentTree st(A);
 
-  printf("              idx    0, 1, 2, 3, 4, 5, 6, 7\n");
-  printf("              A is {18,17,13,19,15,11,20,oo}\n");
-  printf("RMQ(1, 3) = %d\n", st.RMQ(1, 3));      // 13
-  printf("RMQ(4, 7) = %d\n", st.RMQ(4, 7));      // 11
-  printf("RMQ(3, 4) = %d\n", st.RMQ(3, 4));      // 15
+    cout << "              idx    0, 1, 2, 3, 4, 5, 6, 7" << endl;
+    cout << "              A is {18,17,13,19,15,11,20,oo}" << endl;
+    cout << "query(1, 3) = " << st.query(1, 3) << endl; // 13
+    cout << "query(4, 7) = " << st.query(4, 7) << endl; // 11
+    cout << "query(3, 4) = " << st.query(3, 4) << endl; // 15
 
-  st.update(5, 5, 77);                           // update A[5] to 77
-  printf("              idx    0, 1, 2, 3, 4, 5, 6, 7\n");
-  printf("Now, modify A into {18,17,13,19,15,77,20,oo}\n");
-  printf("RMQ(1, 3) = %d\n", st.RMQ(1, 3));      // remains 13
-  printf("RMQ(4, 7) = %d\n", st.RMQ(4, 7));      // now 15
-  printf("RMQ(3, 4) = %d\n", st.RMQ(3, 4));      // remains 15
+    st.update(5, 5, 77); // update A[5] to 77
+    cout << "              idx    0, 1, 2, 3, 4, 5, 6, 7" << endl;
+    cout << "Now, modify A into {18,17,13,19,15,77,20,oo}" << endl;
+    cout << "query(1, 3) = " << st.query(1, 3) << endl; // remains 13
+    cout << "query(4, 7) = " << st.query(4, 7) << endl; // now 15
+    cout << "query(3, 4) = " << st.query(3, 4) << endl; // remains 15
 
-  st.update(0, 3, 30);                           // update A[0..3] to 30
-  printf("              idx    0, 1, 2, 3, 4, 5, 6, 7\n");
-  printf("Now, modify A into {30,30,30,30,15,77,20,oo}\n");
-  printf("RMQ(1, 3) = %d\n", st.RMQ(1, 3));      // now 30
-  printf("RMQ(4, 7) = %d\n", st.RMQ(4, 7));      // remains 15
-  printf("RMQ(3, 4) = %d\n", st.RMQ(3, 4));      // remains 15
+    st.update(0, 3, 30); // update A[0..3] to 30
+    cout << "              idx    0, 1, 2, 3, 4, 5, 6, 7" << endl;
+    cout << "Now, modify A into {30,30,30,30,15,77,20,oo}" << endl;
+    cout << "query(1, 3) = " << st.query(1, 3) << endl; // now 30
+    cout << "query(4, 7) = " << st.query(4, 7) << endl; // remains 15
+    cout << "query(3, 4) = " << st.query(3, 4) << endl; // remains 15
 
-  st.update(3, 3, 7);                            // update A[3] to 7
-  printf("              idx    0, 1, 2, 3, 4, 5, 6, 7\n");
-  printf("Now, modify A into {30,30,30, 7,15,77,20,oo}\n");
-  printf("RMQ(1, 3) = %d\n", st.RMQ(1, 3));      // now 7
-  printf("RMQ(4, 7) = %d\n", st.RMQ(4, 7));      // remains 15
-  printf("RMQ(3, 4) = %d\n", st.RMQ(3, 4));      // now 7
+    st.update(3, 3, 7); // update A[3] to 7
+    cout << "              idx    0, 1, 2, 3, 4, 5, 6, 7" << endl;
+    cout << "Now, modify A into {30,30,30, 7,15,77,20,oo}" << endl;
+    cout << "query(1, 3) = " << st.query(1, 3) << endl; // now 7
+    cout << "query(4, 7) = " << st.query(4, 7) << endl; // remains 15
+    cout << "query(3, 4) = " << st.query(3, 4) << endl; // now 7
 
-  return 0;
+    return 0;
 }
