@@ -19,8 +19,8 @@ data:
     , line 260, in _resolve\n    raise BundleErrorAt(path, -1, \"no such header\"\
     )\nonlinejudge_verify.languages.cplusplus_bundle.BundleErrorAt: ../Polynomial/NTT_chemthan.h:\
     \ line -1: no such header\n"
-  code: "// CRT {{{\n// Tested:\n// - https://oj.vnoi.info/problem/icpc21_mt_d\n//\
-    \ - (__int128_t) https://judge.yosupo.jp/problem/convolution_mod_1000000007\n\
+  code: "// Chinese Remainder Theorem {{{\n// Tested:\n// - https://oj.vnoi.info/problem/icpc21_mt_d\n\
+    // - (__int128_t) https://judge.yosupo.jp/problem/convolution_mod_1000000007\n\
     template<typename T>\nstruct CRT {\n    T res;\n\n    CRT() {\n        res = 0,\
     \ prd = 1;\n    }\n    \n    // Add condition: res % p == r\n    void add(T p,\
     \ T r) {\n        res += mul(r - res % p + p, euclid(prd, p).first + p, p) * prd;\n\

@@ -116,6 +116,9 @@ data:
       path: Math/Modulo.cpp
       title: Math/Modulo.cpp
     - icon: ':warning:'
+      path: Math/PrimeFacts-related.cpp
+      title: Math/PrimeFacts-related.cpp
+    - icon: ':warning:'
       path: Math/PrimeGen.cpp
       title: Math/PrimeGen.cpp
     - icon: ':warning:'
@@ -188,6 +191,9 @@ data:
     - icon: ':warning:'
       path: String/SuffixAutomation.cpp
       title: String/SuffixAutomation.cpp
+    - icon: ':warning:'
+      path: String/SuffixTrie.cpp
+      title: String/SuffixTrie.cpp
     - icon: ':warning:'
       path: String/Zfunc.cpp
       title: String/Zfunc.cpp
