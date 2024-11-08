@@ -39,24 +39,24 @@ data:
     // #define PATH_QUERIES_ONLY\n\n// TODO: Specify T\n// using T = long long;\n\
     // Link Cut Tree {{{\n// SplayTree {{{\nstruct SplayTree { // can we replace SplayTreeById\
     \ and use this only?\n    struct Node {\n        array<int, 2> child = {0, 0};\n\
-    \        int parent = 0;\n\n        // Path aggregates\n        // - path[0] =\
-    \ go from left -> right\n        // - path[1] = go from right -> left\n      \
-    \  array<T, 2> path;  // default to T constructor\n        T self;\n\n       \
-    \ // Subtree aggregates\n        T sub, vir;\n\n        bool reverse = false;\n\
-    \    };\n    vector<Node> nodes;\n\n    SplayTree(int n) : nodes(n + 1) {}\n\n\
-    \    void splay(int x) {\n        for (pushDown(x); ~getDirection(x); ) {\n  \
-    \          int y = nodes[x].parent;\n            int z = nodes[y].parent;\n  \
-    \          pushDown(z);\n            pushDown(y);\n            pushDown(x);\n\
-    \            int dx = getDirection(x);\n            int dy = getDirection(y);\n\
-    \            if (~dy) rotate(dx != dy ? x : y);\n            rotate(x);\n    \
-    \    }\n    }\n\n// private:\n    // Return t where nodes[parent(x)].child[t]\
-    \ == x\n    int getDirection(int x) {\n        int p = nodes[x].parent;\n    \
-    \    if (!p) return -1;\n        return nodes[p].child[0] == x ? 0 : nodes[p].child[1]\
-    \ == x ? 1 : -1;\n    }\n\n    /**\n     * Before:\n     *    z\n     *    |\n\
-    \     *    y\n     *   /\n     *  x\n     *   \\\n     *   xchild\n     * \n \
-    \    * After:\n     *    z\n     *    |\n     *    x\n     *     \\\n     *  \
-    \    y\n     *     /\n     *   xchild\n     */\n    void rotate(int x) {\n   \
-    \     int y = nodes[x].parent, dx = getDirection(x);\n        int z = nodes[y].parent,\
+    \        int parent = 0;\n        // Path aggregates\n        // - path[0] = go\
+    \ from left -> right\n        // - path[1] = go from right -> left\n        array<T,\
+    \ 2> path;  // default to T constructor\n        T self;\n\n        // Subtree\
+    \ aggregates\n        T sub, vir;\n\n        bool reverse = false;\n    };\n \
+    \   vector<Node> nodes;\n\n    SplayTree(int n) : nodes(n + 1) {}\n\n    void\
+    \ splay(int x) {\n        for (pushDown(x); ~getDirection(x); ) {\n          \
+    \  int y = nodes[x].parent;\n            int z = nodes[y].parent;\n          \
+    \  pushDown(z);\n            pushDown(y);\n            pushDown(x);\n        \
+    \    int dx = getDirection(x);\n            int dy = getDirection(y);\n      \
+    \      if (~dy) rotate(dx != dy ? x : y);\n            rotate(x);\n        }\n\
+    \    }\n\n// private:\n    // Return t where nodes[parent(x)].child[t] == x\n\
+    \    int getDirection(int x) {\n        int p = nodes[x].parent;\n        if (!p)\
+    \ return -1;\n        return nodes[p].child[0] == x ? 0 : nodes[p].child[1] ==\
+    \ x ? 1 : -1;\n    }\n\n    /**\n     * Before:\n     *    z\n     *    |\n  \
+    \   *    y\n     *   /\n     *  x\n     *   \\\n     *   xchild\n     * \n   \
+    \  * After:\n     *    z\n     *    |\n     *    x\n     *     \\\n     *    \
+    \  y\n     *     /\n     *   xchild\n     */\n    void rotate(int x) {\n     \
+    \   int y = nodes[x].parent, dx = getDirection(x);\n        int z = nodes[y].parent,\
     \ dy = getDirection(y);\n\n        setChild(y, nodes[x].child[!dx], dx);\n   \
     \     setChild(x, y, !dx);\n        if (~dy) setChild(z, x, dy);\n        nodes[x].parent\
     \ = z;\n    }\n\n    void pushDown(int x) {\n        if (!x) return;\n       \
@@ -109,7 +109,7 @@ data:
     \ + x);\n        } else if (typ == 2) {  // get sum of subtree(u). v is parent\
     \ of u\n            int u, v; cin >> u >> v;\n            ++u; ++v;\n        \
     \    cout << tree.getSubtree(u, v) << '\\n';\n        }\n    }\n    return 0;\n\
-    }"
+    }\n"
   dependsOn: []
   isVerificationFile: false
   path: Data Structrue/LinkCutTree.cpp

@@ -140,7 +140,7 @@ data:
   isVerificationFile: false
   path: Data Structrue/SegmentTree.cpp
   requiredBy: []
-  timestamp: '2024-11-08 23:54:49+07:00'
+  timestamp: '2024-11-09 00:09:26+07:00'
   verificationStatus: LIBRARY_NO_TESTS
   verifiedWith: []
 documentation_of: Data Structrue/SegmentTree.cpp
