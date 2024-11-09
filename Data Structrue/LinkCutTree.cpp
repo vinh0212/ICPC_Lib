@@ -27,7 +27,6 @@ struct SplayTree { // can we replace SplayTreeById and use this only?
     struct Node {
         array<int, 2> child = {0, 0};
         int parent = 0;
-
         // Path aggregates
         // - path[0] = go from left -> right
         // - path[1] = go from right -> left
