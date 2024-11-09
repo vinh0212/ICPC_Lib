@@ -4,6 +4,9 @@ data:
   - name: Algorithm
     pages:
     - icon: ':warning:'
+      path: Algorithm/Dinic MaxFlow.cpp
+      title: Algorithm/Dinic MaxFlow.cpp
+    - icon: ':warning:'
       path: Algorithm/Mo's Algorithm on Trees.cpp
       title: Algorithm/Mo's Algorithm on Trees.cpp
     - icon: ':warning:'

@@ -46,7 +46,7 @@ data:
   isVerificationFile: false
   path: String/KMP.cpp
   requiredBy: []
-  timestamp: '2024-11-09 09:36:42+07:00'
+  timestamp: '2024-11-09 21:40:45+07:00'
   verificationStatus: LIBRARY_NO_TESTS
   verifiedWith: []
 documentation_of: String/KMP.cpp
