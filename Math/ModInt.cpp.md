@@ -139,7 +139,7 @@ data:
   isVerificationFile: false
   path: Math/ModInt.cpp
   requiredBy: []
-  timestamp: '2024-11-10 11:18:59+07:00'
+  timestamp: '2024-11-10 11:32:39+07:00'
   verificationStatus: LIBRARY_NO_TESTS
   verifiedWith: []
 documentation_of: Math/ModInt.cpp

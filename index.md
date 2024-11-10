@@ -1,6 +1,11 @@
 ---
 data:
   libraryCategories:
+  - name: .
+    pages:
+    - icon: ':warning:'
+      path: AA-Template.cpp
+      title: AA-Template.cpp
   - name: Algorithm
     pages:
     - icon: ':warning:'
@@ -200,11 +205,6 @@ data:
     - icon: ':warning:'
       path: String/Zfunc.cpp
       title: String/Zfunc.cpp
-  - name: .
-    pages:
-    - icon: ':warning:'
-      path: g.cpp
-      title: g.cpp
   verificationCategories:
   - name: .
     pages:
