@@ -72,7 +72,7 @@ data:
   isVerificationFile: false
   path: String/SuffixTrie.cpp
   requiredBy: []
-  timestamp: '2024-11-09 21:40:45+07:00'
+  timestamp: '2024-11-10 11:18:59+07:00'
   verificationStatus: LIBRARY_NO_TESTS
   verifiedWith: []
 documentation_of: String/SuffixTrie.cpp
