@@ -71,7 +71,25 @@ data:
     \      x = v >= MD ? v - MD : v;\n        return *this;\n    }\n};\ntemplate <int\
     \ MD> std::vector<ModInt<MD>> ModInt<MD>::factorials = {1};\ntemplate <int MD>\
     \ std::vector<ModInt<MD>> ModInt<MD>::inv_factorials = {1};\ntemplate <int MD>\
-    \ std::vector<ModInt<MD>> ModInt<MD>::invs = {0};\n// }}}\n"
+    \ std::vector<ModInt<MD>> ModInt<MD>::invs = {0};\n// }}}\n\n//Example Code\n\
+    #include <bits/stdc++.h>\nusing namespace std;\n\n// \u0110\u1EB7t \u0111o\u1EA1\
+    n m\xE3 ModInt \u1EDF \u0111\xE2y ho\u1EB7c bao g\u1ED3m n\xF3 t\u1EEB file kh\xE1\
+    c\n// ...\n\nconst int MOD = 1000000007;\nusing mint = ModInt<MOD>;\n\nint main()\
+    \ {\n    // Kh\u1EDFi t\u1EA1o\n    mint a = 10;\n    mint b = 20;\n    mint c\
+    \ = -15;\n    mint d = 1000000017;\n\n    // Hi\u1EC3n th\u1ECB c\xE1c gi\xE1\
+    \ tr\u1ECB\n    cout << \"a = \" << a << \"\\n\"; // a = 10\n    cout << \"b =\
+    \ \" << b << \"\\n\"; // b = 20\n    cout << \"c = \" << c << \"\\n\"; // c =\
+    \ 1000000007 - 15 = 999999992\n    cout << \"d = \" << d << \"\\n\"; // d = 10\n\
+    \n    // Ph\xE9p to\xE1n\n    mint sum = a + b;\n    mint diff = a - b;\n    mint\
+    \ prod = a * b;\n    mint quot = a / b;\n    mint power = a.pow(5);\n    mint\
+    \ combinations = mint::C(5, 2);\n\n    // Hi\u1EC3n th\u1ECB k\u1EBFt qu\u1EA3\
+    \ ph\xE9p to\xE1n\n    cout << \"a + b = \" << sum << \"\\n\";           // 30\n\
+    \    cout << \"a - b = \" << diff << \"\\n\";          // 999999997\n    cout\
+    \ << \"a * b = \" << prod << \"\\n\";          // 200\n    cout << \"a / b = \"\
+    \ << quot << \"\\n\";          // 100 * inv(20) = 100 * 850000005 = 500000005\
+    \ mod MOD\n    cout << \"a^5 = \" << power << \"\\n\";           // 100000\n \
+    \   cout << \"C(5, 2) = \" << combinations << \"\\n\"; // 10\n\n    return 0;\n\
+    }\n\n"
   code: "// ModInt {{{\ntemplate<int MD> struct ModInt {\n    using ll = long long;\n\
     \    int x;\n\n    constexpr ModInt() : x(0) {}\n    constexpr ModInt(ll v) {\
     \ _set(v % MD + MD); }\n    constexpr static int mod() { return MD; }\n    constexpr\
@@ -134,12 +152,30 @@ data:
     \      x = v >= MD ? v - MD : v;\n        return *this;\n    }\n};\ntemplate <int\
     \ MD> std::vector<ModInt<MD>> ModInt<MD>::factorials = {1};\ntemplate <int MD>\
     \ std::vector<ModInt<MD>> ModInt<MD>::inv_factorials = {1};\ntemplate <int MD>\
-    \ std::vector<ModInt<MD>> ModInt<MD>::invs = {0};\n// }}}\n"
+    \ std::vector<ModInt<MD>> ModInt<MD>::invs = {0};\n// }}}\n\n//Example Code\n\
+    #include <bits/stdc++.h>\nusing namespace std;\n\n// \u0110\u1EB7t \u0111o\u1EA1\
+    n m\xE3 ModInt \u1EDF \u0111\xE2y ho\u1EB7c bao g\u1ED3m n\xF3 t\u1EEB file kh\xE1\
+    c\n// ...\n\nconst int MOD = 1000000007;\nusing mint = ModInt<MOD>;\n\nint main()\
+    \ {\n    // Kh\u1EDFi t\u1EA1o\n    mint a = 10;\n    mint b = 20;\n    mint c\
+    \ = -15;\n    mint d = 1000000017;\n\n    // Hi\u1EC3n th\u1ECB c\xE1c gi\xE1\
+    \ tr\u1ECB\n    cout << \"a = \" << a << \"\\n\"; // a = 10\n    cout << \"b =\
+    \ \" << b << \"\\n\"; // b = 20\n    cout << \"c = \" << c << \"\\n\"; // c =\
+    \ 1000000007 - 15 = 999999992\n    cout << \"d = \" << d << \"\\n\"; // d = 10\n\
+    \n    // Ph\xE9p to\xE1n\n    mint sum = a + b;\n    mint diff = a - b;\n    mint\
+    \ prod = a * b;\n    mint quot = a / b;\n    mint power = a.pow(5);\n    mint\
+    \ combinations = mint::C(5, 2);\n\n    // Hi\u1EC3n th\u1ECB k\u1EBFt qu\u1EA3\
+    \ ph\xE9p to\xE1n\n    cout << \"a + b = \" << sum << \"\\n\";           // 30\n\
+    \    cout << \"a - b = \" << diff << \"\\n\";          // 999999997\n    cout\
+    \ << \"a * b = \" << prod << \"\\n\";          // 200\n    cout << \"a / b = \"\
+    \ << quot << \"\\n\";          // 100 * inv(20) = 100 * 850000005 = 500000005\
+    \ mod MOD\n    cout << \"a^5 = \" << power << \"\\n\";           // 100000\n \
+    \   cout << \"C(5, 2) = \" << combinations << \"\\n\"; // 10\n\n    return 0;\n\
+    }\n\n"
   dependsOn: []
   isVerificationFile: false
   path: Math/ModInt.cpp
   requiredBy: []
-  timestamp: '2024-11-10 11:32:39+07:00'
+  timestamp: '2024-11-15 23:57:47+07:00'
   verificationStatus: LIBRARY_NO_TESTS
   verifiedWith: []
 documentation_of: Math/ModInt.cpp

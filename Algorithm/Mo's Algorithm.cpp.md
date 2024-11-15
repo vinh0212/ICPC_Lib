@@ -7,70 +7,90 @@ data:
   _pathExtension: cpp
   _verificationStatusIcon: ':warning:'
   attributes:
-    links:
-    - https://www.spoj.com/problems/FREQ2
-    - https://www.spoj.com/problems/KDOMINO/
-  bundledCode: "#line 1 \"Algorithm/Mo's Algorithm.cpp\"\n// Notes:\n// - queries\
-    \ are [l, r]\n// - add(int array_id) -> void \n// - remove(int array_id) -> void\n\
-    // - get(QueryT query) -> ResultT\n//\n// Tested:\n// - https://www.spoj.com/problems/KDOMINO/\
-    \ (submission ID: 30602374)\n// - https://www.spoj.com/problems/FREQ2 (submission\
-    \ ID: 30602401)\n//\n// Mo algorithm {{{\ntemplate<typename QueryT, typename ResultT,\
-    \ typename Add, typename Rem, typename Get>\nvector<ResultT> mo(int n, std::vector<QueryT>\
-    \ queries, Add add, Rem rem, Get get) {\n    int q = queries.size();\n    std::vector<ResultT>\
-    \ res(q);\n \n    // Sort queries in increasing order of (left / SQRT, right)\n\
-    \    int S = sqrt(n);\n    if (S < 1) S = 1;\n \n    std::vector<int> query_ids(q);\n\
-    \    std::iota(query_ids.begin(), query_ids.end(), 0);\n    std::sort(query_ids.begin(),\
-    \ query_ids.end(), [&] (int q1, int q2) {\n            int bucket1 = queries[q1].l\
-    \ / S;\n            int bucket2 = queries[q2].l / S;\n            if (bucket1\
-    \ != bucket2) return bucket1 < bucket2;\n            else {\n                return\
-    \ bucket1 % 2\n                        ? (queries[q1].r > queries[q2].r)\n   \
-    \                     : (queries[q1].r < queries[q2].r);\n            }\n    \
-    \    });\n \n    // Answer queries\n    int cur_l = -1, cur_r = -1;\n    for (int\
-    \ qid : query_ids) {\n        // move to this range\n        if (cur_l < 0) {\n\
-    \            for (int i = queries[qid].l; i <= queries[qid].r; ++i) {\n      \
-    \          add(i);\n            }\n            cur_l = queries[qid].l, cur_r =\
-    \ queries[qid].r;\n        } else {\n            while (cur_l > queries[qid].l)\
-    \ add(--cur_l);\n            while (cur_r < queries[qid].r) add(++cur_r);\n  \
-    \          while (cur_r > queries[qid].r) rem(cur_r--);\n            while (cur_l\
-    \ < queries[qid].l) rem(cur_l++);\n        }\n \n        res[qid] = get(queries[qid]);\n\
-    \    }\n    return res;\n}\n \n// Example\nstruct Query {\n    int l, r;  // QueryT\
-    \ must have l, r\n};\nostream& operator << (ostream& cout, const Query& q) {\n\
-    \    cout << \"Query: [\" << q.l << \", \" << q.r << \"]\";\n    return cout;\n\
-    }\n// Usage\n// auto res = mo<Query, int, decltype(add), decltype(rem), decltype(get)>\n\
-    //        (n, queries, add, rem, get);\n// }}}\n"
-  code: "// Notes:\n// - queries are [l, r]\n// - add(int array_id) -> void \n// -\
-    \ remove(int array_id) -> void\n// - get(QueryT query) -> ResultT\n//\n// Tested:\n\
-    // - https://www.spoj.com/problems/KDOMINO/ (submission ID: 30602374)\n// - https://www.spoj.com/problems/FREQ2\
-    \ (submission ID: 30602401)\n//\n// Mo algorithm {{{\ntemplate<typename QueryT,\
-    \ typename ResultT, typename Add, typename Rem, typename Get>\nvector<ResultT>\
-    \ mo(int n, std::vector<QueryT> queries, Add add, Rem rem, Get get) {\n    int\
-    \ q = queries.size();\n    std::vector<ResultT> res(q);\n \n    // Sort queries\
-    \ in increasing order of (left / SQRT, right)\n    int S = sqrt(n);\n    if (S\
-    \ < 1) S = 1;\n \n    std::vector<int> query_ids(q);\n    std::iota(query_ids.begin(),\
-    \ query_ids.end(), 0);\n    std::sort(query_ids.begin(), query_ids.end(), [&]\
-    \ (int q1, int q2) {\n            int bucket1 = queries[q1].l / S;\n         \
-    \   int bucket2 = queries[q2].l / S;\n            if (bucket1 != bucket2) return\
-    \ bucket1 < bucket2;\n            else {\n                return bucket1 % 2\n\
-    \                        ? (queries[q1].r > queries[q2].r)\n                 \
-    \       : (queries[q1].r < queries[q2].r);\n            }\n        });\n \n  \
-    \  // Answer queries\n    int cur_l = -1, cur_r = -1;\n    for (int qid : query_ids)\
-    \ {\n        // move to this range\n        if (cur_l < 0) {\n            for\
-    \ (int i = queries[qid].l; i <= queries[qid].r; ++i) {\n                add(i);\n\
-    \            }\n            cur_l = queries[qid].l, cur_r = queries[qid].r;\n\
-    \        } else {\n            while (cur_l > queries[qid].l) add(--cur_l);\n\
-    \            while (cur_r < queries[qid].r) add(++cur_r);\n            while (cur_r\
-    \ > queries[qid].r) rem(cur_r--);\n            while (cur_l < queries[qid].l)\
-    \ rem(cur_l++);\n        }\n \n        res[qid] = get(queries[qid]);\n    }\n\
-    \    return res;\n}\n \n// Example\nstruct Query {\n    int l, r;  // QueryT must\
-    \ have l, r\n};\nostream& operator << (ostream& cout, const Query& q) {\n    cout\
-    \ << \"Query: [\" << q.l << \", \" << q.r << \"]\";\n    return cout;\n}\n// Usage\n\
-    // auto res = mo<Query, int, decltype(add), decltype(rem), decltype(get)>\n//\
-    \        (n, queries, add, rem, get);\n// }}}"
+    links: []
+  bundledCode: "#line 1 \"Algorithm/Mo's Algorithm.cpp\"\n#include <bits/stdc++.h>\n\
+    using namespace std;\n\n// Structure to represent a query\nstruct Query {\n  \
+    \  int l, r, idx; // l: left index, r: right index, idx: original query index\n\
+    };\n\n// Comparator function to sort queries according to Mo's algorithm\nbool\
+    \ mo_cmp(const Query &a, const Query &b, int block_size) {\n    if (a.l / block_size\
+    \ != b.l / block_size)\n        return a.l / block_size < b.l / block_size;\n\
+    \    // If in the same block, sort by R value\n    // Alternate sorting order\
+    \ for even and odd blocks to optimize cache\n    if ((a.l / block_size) & 1)\n\
+    \        return a.r > b.r;\n    else\n        return a.r < b.r;\n}\n\n// Function\
+    \ to perform Mo's algorithm\nvector<long long> mos_algorithm(int n, vector<Query>\
+    \ &queries, vector<int> &array) {\n    int q = queries.size();\n    vector<long\
+    \ long> answers(q);\n    \n    // Determine block size\n    int block_size = sqrt(n)\
+    \ + 1;\n    \n    // Sort queries using the comparator\n    sort(queries.begin(),\
+    \ queries.end(), [&](const Query &a, const Query &b) -> bool {\n        return\
+    \ mo_cmp(a, b, block_size);\n    });\n    \n    // Initialize current range [curr_l,\
+    \ curr_r]\n    int curr_l = 0, curr_r = -1;\n    \n    // Example: Count of distinct\
+    \ elements\n    // Modify these variables and functions based on the problem\n\
+    \    int distinct = 0;\n    // Assuming array elements are in the range [1, max_val]\n\
+    \    int max_val = *max_element(array.begin(), array.end());\n    vector<int>\
+    \ freq(max_val + 1, 0);\n    // Lambda to add an element to the current range\n\
+    \    auto add = [&](int idx) {\n        freq[array[idx]]++;\n        if (freq[array[idx]]\
+    \ == 1)\n            distinct++;\n    };\n    // Lambda to remove an element from\
+    \ the current range\n    auto remove_fn = [&](int idx) {\n        freq[array[idx]]--;\n\
+    \        if (freq[array[idx]] == 0)\n            distinct--;\n    };\n    \n \
+    \   // Process each query\n    for(auto &query : queries){\n        int L = query.l;\n\
+    \        int R = query.r;\n        \n        // Expand to the left\n        while(curr_l\
+    \ > L) add(--curr_l);\n        // Expand to the right\n        while(curr_r <\
+    \ R) add(++curr_r);\n        // Contract from the left\n        while(curr_l <\
+    \ L) remove_fn(curr_l++);\n        // Contract from the right\n        while(curr_r\
+    \ > R) remove_fn(curr_r--);\n        \n        // Store the answer for the current\
+    \ query\n        answers[query.idx] = distinct; // Replace 'distinct' with the\
+    \ required metric\n    }\n    \n    return answers;\n}\n\nint main(){\n    ios::sync_with_stdio(false);\n\
+    \    cin.tie(0);\n    \n    int n, q;\n    cin >> n >> q;\n    vector<int> array(n);\n\
+    \    for(auto &x : array) cin >> x;\n    \n    vector<Query> queries(q);\n   \
+    \ for(int i = 0; i < q; ++i){\n        cin >> queries[i].l >> queries[i].r;\n\
+    \        queries[i].l--; // Convert to 0-based index\n        queries[i].r--;\
+    \ // Convert to 0-based index\n        queries[i].idx = i;\n    }\n    \n    vector<long\
+    \ long> answers = mos_algorithm(n, queries, array);\n    \n    for(auto &ans :\
+    \ answers) cout << ans << \"\\n\";\n}\n"
+  code: "#include <bits/stdc++.h>\nusing namespace std;\n\n// Structure to represent\
+    \ a query\nstruct Query {\n    int l, r, idx; // l: left index, r: right index,\
+    \ idx: original query index\n};\n\n// Comparator function to sort queries according\
+    \ to Mo's algorithm\nbool mo_cmp(const Query &a, const Query &b, int block_size)\
+    \ {\n    if (a.l / block_size != b.l / block_size)\n        return a.l / block_size\
+    \ < b.l / block_size;\n    // If in the same block, sort by R value\n    // Alternate\
+    \ sorting order for even and odd blocks to optimize cache\n    if ((a.l / block_size)\
+    \ & 1)\n        return a.r > b.r;\n    else\n        return a.r < b.r;\n}\n\n\
+    // Function to perform Mo's algorithm\nvector<long long> mos_algorithm(int n,\
+    \ vector<Query> &queries, vector<int> &array) {\n    int q = queries.size();\n\
+    \    vector<long long> answers(q);\n    \n    // Determine block size\n    int\
+    \ block_size = sqrt(n) + 1;\n    \n    // Sort queries using the comparator\n\
+    \    sort(queries.begin(), queries.end(), [&](const Query &a, const Query &b)\
+    \ -> bool {\n        return mo_cmp(a, b, block_size);\n    });\n    \n    // Initialize\
+    \ current range [curr_l, curr_r]\n    int curr_l = 0, curr_r = -1;\n    \n   \
+    \ // Example: Count of distinct elements\n    // Modify these variables and functions\
+    \ based on the problem\n    int distinct = 0;\n    // Assuming array elements\
+    \ are in the range [1, max_val]\n    int max_val = *max_element(array.begin(),\
+    \ array.end());\n    vector<int> freq(max_val + 1, 0);\n    // Lambda to add an\
+    \ element to the current range\n    auto add = [&](int idx) {\n        freq[array[idx]]++;\n\
+    \        if (freq[array[idx]] == 1)\n            distinct++;\n    };\n    // Lambda\
+    \ to remove an element from the current range\n    auto remove_fn = [&](int idx)\
+    \ {\n        freq[array[idx]]--;\n        if (freq[array[idx]] == 0)\n       \
+    \     distinct--;\n    };\n    \n    // Process each query\n    for(auto &query\
+    \ : queries){\n        int L = query.l;\n        int R = query.r;\n        \n\
+    \        // Expand to the left\n        while(curr_l > L) add(--curr_l);\n   \
+    \     // Expand to the right\n        while(curr_r < R) add(++curr_r);\n     \
+    \   // Contract from the left\n        while(curr_l < L) remove_fn(curr_l++);\n\
+    \        // Contract from the right\n        while(curr_r > R) remove_fn(curr_r--);\n\
+    \        \n        // Store the answer for the current query\n        answers[query.idx]\
+    \ = distinct; // Replace 'distinct' with the required metric\n    }\n    \n  \
+    \  return answers;\n}\n\nint main(){\n    ios::sync_with_stdio(false);\n    cin.tie(0);\n\
+    \    \n    int n, q;\n    cin >> n >> q;\n    vector<int> array(n);\n    for(auto\
+    \ &x : array) cin >> x;\n    \n    vector<Query> queries(q);\n    for(int i =\
+    \ 0; i < q; ++i){\n        cin >> queries[i].l >> queries[i].r;\n        queries[i].l--;\
+    \ // Convert to 0-based index\n        queries[i].r--; // Convert to 0-based index\n\
+    \        queries[i].idx = i;\n    }\n    \n    vector<long long> answers = mos_algorithm(n,\
+    \ queries, array);\n    \n    for(auto &ans : answers) cout << ans << \"\\n\"\
+    ;\n}\n"
   dependsOn: []
   isVerificationFile: false
   path: Algorithm/Mo's Algorithm.cpp
   requiredBy: []
-  timestamp: '2024-11-10 04:34:03+00:00'
+  timestamp: '2024-11-15 16:59:08+00:00'
   verificationStatus: LIBRARY_NO_TESTS
   verifiedWith: []
 documentation_of: Algorithm/Mo's Algorithm.cpp

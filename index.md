@@ -142,6 +142,9 @@ data:
       path: Math/Sieve.cpp
       title: Math/Sieve.cpp
     - icon: ':warning:'
+      path: Math/SolveCongruence.cpp
+      title: Math/SolveCongruence.cpp
+    - icon: ':warning:'
       path: Math/SqrtMod.cpp
       title: Math/SqrtMod.cpp
     - icon: ':warning:'

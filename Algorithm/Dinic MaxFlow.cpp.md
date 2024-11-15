@@ -28,13 +28,7 @@ data:
     \                if ((cap - flow > 0) && (d[v] == -1))            // positive\
     \ residual edge\n                    d[v] = d[u] + 1, q.push(v), p[v] = {u, idx};\
     \ // 3 lines in one!\n            }\n        }\n        return d[t] != -1; //\
-    \ has an augmenting path\n    }\n\n    ll send_one_flow(int s, int t, ll f = INF)\n\
-    \    { // send one flow from s->t\n        if (s == t)\n            return f;\
-    \ // bottleneck edge f found\n        auto &[u, idx] = p[t];\n        auto &cap\
-    \ = get<1>(EL[idx]), &flow = get<2>(EL[idx]);\n        ll pushed = send_one_flow(s,\
-    \ u, min(f, cap - flow));\n        flow += pushed;\n        auto &rflow = get<2>(EL[idx\
-    \ ^ 1]); // back edge\n        rflow -= pushed;                   // back flow\n\
-    \        return pushed;\n    }\n\n    ll DFS(int u, int t, ll f = INF)\n    {\
+    \ has an augmenting path\n    }\n\n    ll DFS(int u, int t, ll f = INF)\n    {\
     \ // traverse from s->t\n        if ((u == t) || (f == 0))\n            return\
     \ f;\n        for (int &i = last[u]; i < (int)AL[u].size(); ++i)\n        { //\
     \ from last edge\n            auto &[v, cap, flow] = EL[AL[u][i]];\n         \
@@ -83,13 +77,7 @@ data:
     \                if ((cap - flow > 0) && (d[v] == -1))            // positive\
     \ residual edge\n                    d[v] = d[u] + 1, q.push(v), p[v] = {u, idx};\
     \ // 3 lines in one!\n            }\n        }\n        return d[t] != -1; //\
-    \ has an augmenting path\n    }\n\n    ll send_one_flow(int s, int t, ll f = INF)\n\
-    \    { // send one flow from s->t\n        if (s == t)\n            return f;\
-    \ // bottleneck edge f found\n        auto &[u, idx] = p[t];\n        auto &cap\
-    \ = get<1>(EL[idx]), &flow = get<2>(EL[idx]);\n        ll pushed = send_one_flow(s,\
-    \ u, min(f, cap - flow));\n        flow += pushed;\n        auto &rflow = get<2>(EL[idx\
-    \ ^ 1]); // back edge\n        rflow -= pushed;                   // back flow\n\
-    \        return pushed;\n    }\n\n    ll DFS(int u, int t, ll f = INF)\n    {\
+    \ has an augmenting path\n    }\n\n    ll DFS(int u, int t, ll f = INF)\n    {\
     \ // traverse from s->t\n        if ((u == t) || (f == 0))\n            return\
     \ f;\n        for (int &i = last[u]; i < (int)AL[u].size(); ++i)\n        { //\
     \ from last edge\n            auto &[v, cap, flow] = EL[AL[u][i]];\n         \
@@ -124,7 +112,7 @@ data:
   isVerificationFile: false
   path: Algorithm/Dinic MaxFlow.cpp
   requiredBy: []
-  timestamp: '2024-11-10 11:32:39+07:00'
+  timestamp: '2024-11-15 23:57:47+07:00'
   verificationStatus: LIBRARY_NO_TESTS
   verifiedWith: []
 documentation_of: Algorithm/Dinic MaxFlow.cpp

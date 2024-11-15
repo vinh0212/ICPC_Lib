@@ -7,194 +7,154 @@ data:
   _pathExtension: cpp
   _verificationStatusIcon: ':warning:'
   attributes:
-    links:
-    - https://judge.yosupo.jp/problem/dynamic_sequence_range_affine_range_sum
-    - https://judge.yosupo.jp/problem/range_reverse_range_sum
-    - https://judge.yosupo.jp/submission/53778
-    - https://oj.vnoi.info/problem/qmax3vn
-    - https://oj.vnoi.info/problem/twist
-    - https://oj.vnoi.info/problem/upit
-    - https://vn.spoj.com/problems/CARDS/
-    - https://vn.spoj.com/problems/CARDSHUF/
-    - https://vn.spoj.com/problems/QMAX4/
-  bundledCode: "Traceback (most recent call last):\n  File \"/home/runner/.local/lib/python3.10/site-packages/onlinejudge_verify/documentation/build.py\"\
-    , line 71, in _render_source_code_stat\n    bundled_code = language.bundle(stat.path,\
-    \ basedir=basedir, options={'include_paths': [basedir]}).decode()\n  File \"/home/runner/.local/lib/python3.10/site-packages/onlinejudge_verify/languages/cplusplus.py\"\
-    , line 187, in bundle\n    bundler.update(path)\n  File \"/home/runner/.local/lib/python3.10/site-packages/onlinejudge_verify/languages/cplusplus_bundle.py\"\
-    , line 401, in update\n    self.update(self._resolve(pathlib.Path(included), included_from=path))\n\
-    \  File \"/home/runner/.local/lib/python3.10/site-packages/onlinejudge_verify/languages/cplusplus_bundle.py\"\
-    , line 260, in _resolve\n    raise BundleErrorAt(path, -1, \"no such header\"\
-    )\nonlinejudge_verify.languages.cplusplus_bundle.BundleErrorAt: ../../template.h:\
-    \ line -1: no such header\n"
-  code: "// SplayTreeById\n//\n// Note:\n// - op() must be commutative, otherwise\
-    \ reverse queries won't work.\n//   To fix it, need to store aggregate data from\
-    \ right->left\n//   See https://judge.yosupo.jp/submission/53778 (and look at\
-    \ invsum)\n//\n// Tested:\n// - (cut, join)      https://vn.spoj.com/problems/CARDS/\n\
-    // - (keys, reverse)  https://oj.vnoi.info/problem/twist\n// - (insert, prod)\
-    \   https://oj.vnoi.info/problem/qmax3vn\n// - (insert, delete) https://vn.spoj.com/problems/QMAX4/\n\
-    // - (insert, delete) https://vn.spoj.com/problems/CARDSHUF/\n// - (lazy)    \
-    \       https://judge.yosupo.jp/problem/dynamic_sequence_range_affine_range_sum\n\
-    // - (lazy)           https://oj.vnoi.info/problem/upit\ntemplate<class K, class\
-    \ S, class F>\nstruct node_t {\n    using Node = node_t<K, S, F>;\n\n    std::array<Node*,\
-    \ 2> child;\n    Node *father;\n    int size;\n    \n    // Whether we will need\
-    \ to reverse this subtree.\n    // Handling reverse operations requires some specialized\
-    \ code,\n    // so I couldn't put this in F\n    bool reverse;\n\n    K key;\n\
-    \    S data;\n    F lazy;\n};\ntemplate<\n    class K,                       \
-    \        // key\n    class S,                               // node aggregate\
-    \ data\n    S (*op) (S, K, S),                     // for recomputing data of\
-    \ a node\n    pair<K, S> (*e) (),                    // identity data\n    class\
-    \ F,                               // lazy propagation tag\n    pair<K, S> (*mapping)\
-    \ (F, node_t<K, S, F>*),  // apply tag F on a node\n    F (*composition) (F, F),\
-    \               // combine 2 tags\n    F (*id)()                             \
-    \ // identity tag\n>\nstruct SplayTreeById {\n    using Node = node_t<K, S, F>;\n\
-    \n    Node *nil, *root;\n\n    SplayTreeById() {\n        initNil();\n       \
-    \ root = nil;\n    }\n    SplayTreeById(const vector<K>& keys) {\n        initNil();\n\
-    \        root = createNode(keys, 0, (int) keys.size());\n    }\n\n    vector<K>\
-    \ getKeys() {\n        vector<K> keys;\n        traverse(root, keys);\n      \
-    \  return keys;\n    }\n\n    // k in [0, n-1]\n    Node* kth(int k) {\n     \
-    \   auto res = _kth(root, k);\n        splay(res);\n        root = res;\n    \
-    \    return res;\n    }\n\n    // Return <L, R>:\n    // - L contains [0, k-1]\n\
-    \    // - R contains [k, N-1]\n    // Modify tree\n    pair<Node*, Node*> cut(int\
-    \ k) {\n        if (k == 0) {\n            return {nil, root};\n        } else\
-    \ if (k == root->size) {\n            return {root, nil};\n        } else {\n\
-    \            Node *left = kth(k - 1);  // kth already splayed\n            Node*\
-    \ right = left->child[1];\n            left->child[1] = right->father = nil;\n\
-    \            pushUp(left);\n            return {left, right};\n        }\n   \
-    \ }\n\n    // Return <X, Y, Z>:\n    // - X contains [0, u-1]\n    // - Y contains\
-    \ [u, v-1]\n    // - Z contains [v, N-1]\n    // This is useful for queries on\
-    \ [u, v-1]\n    // Modify tree\n    tuple<Node*, Node*, Node*> cut(int u, int\
-    \ v) {\n        auto [xy, z] = cut(v);\n        root = xy;\n        auto [x, y]\
-    \ = cut(u);\n        return {x, y, z};\n    }\n\n    // Make this tree x + y\n\
-    \    void join(Node *x, Node *y) {\n        if (x == nil) {\n            root\
-    \ = y;\n            return;\n        }\n        while (1) {\n            pushDown(x);\n\
-    \            if (x->child[1] == nil) break;\n            x = x->child[1];\n  \
-    \      }\n        splay(x);\n        setChild(x, y, 1);\n        pushUp(x);\n\
-    \        root = x;\n    }\n\n    // reverse range [u, v-1]\n    void reverse(int\
-    \ u, int v) {\n        assert(0 <= u && u <= v && v <= root->size);\n        if\
-    \ (u == v) return;\n\n        auto [x, y, z] = cut(u, v);\n        y->reverse\
-    \ = true;\n        join(x, y);\n        join(root, z);\n    }\n\n    // apply\
-    \ F on range [u, v-1]\n    void apply(int u, int v, const F& f) {\n        assert(0\
-    \ <= u && u <= v && v <= root->size);\n        if (u == v) return;\n\n       \
-    \ auto [x, y, z] = cut(u, v);\n        y->lazy = composition(f, y->lazy);\n  \
-    \      std::tie(y->key, y->data) = mapping(f, y);\n\n        join(x, y);\n   \
-    \     join(root, z);\n    }\n\n    // Insert before pos\n    // pos in [0, N]\n\
-    \    void insert(int pos, K key) {\n        assert(0 <= pos && pos <= root->size);\n\
-    \        // x: [0, pos-1]\n        // y: [pos, N-1]\n        auto [x, y] = cut(pos);\n\
-    \        auto node = createNode(key);\n        setChild(node, x, 0);\n       \
-    \ setChild(node, y, 1);\n        pushUp(node);\n        root = node;\n    }\n\n\
-    \    // Delete pos; pos in [0, N-1]\n    K erase(int pos) {\n        assert(0\
-    \ <= pos && pos < root->size);\n\n        // x = [0, pos-1]\n        // y = [pos,\
-    \ pos]\n        // z = [pos+1, N-1]\n        auto [x, y, z] = cut(pos, pos+1);\n\
-    \        join(x, z);\n        return y->key;\n    }\n\n    // aggregated data\
-    \ of range [l, r-1]\n    S prod(int l, int r) {\n        auto [x, y, z] = cut(l,\
-    \ r);\n        auto res = y->data;\n        join(x, y);\n        join(root, z);\n\
-    \        return res;\n    }\n\n// private:\n    void initNil() {\n        nil\
-    \ = new Node();\n        nil->child[0] = nil->child[1] = nil->father = nil;\n\
-    \        nil->size = 0;\n        nil->reverse = false;\n        std::tie(nil->key,\
-    \ nil->data) = e();\n        nil->lazy = id();\n    }\n    void pushUp(Node* x)\
-    \ {\n        if (x == nil) return;\n        x->size = x->child[0]->size + x->child[1]->size\
-    \ + 1;\n        x->data = op(x->child[0]->data, x->key, x->child[1]->data);\n\
-    \    }\n    void pushDown(Node* x) {\n        if (x == nil) return;\n\n      \
-    \  if (x->reverse) {\n            for (auto c : x->child) {\n                if\
-    \ (c != nil) {\n                    c->reverse ^= 1;\n                }\n    \
-    \        }\n            std::swap(x->child[0], x->child[1]);\n            x->reverse\
-    \ = false;\n        }\n\n        for (auto c : x->child) {\n            if (c\
-    \ != nil) {\n                std::tie(c->key, c->data) = mapping(x->lazy, c);\n\
-    \                c->lazy = composition(x->lazy, c->lazy);\n            }\n   \
-    \         // For problem like UPIT, where we want to push different\n        \
-    \    // lazy tags to left & right children, may need to modify\n            //\
-    \ code here\n            // (query L R X: a(L) += X, a(L+1) += 2X, ...)\n    \
-    \        // e.g. for UPIT:\n            // x->lazy.add_left += (1 + c->size) *\
-    \ x->lazy.step;\n        }\n\n        x->lazy = id();\n    }\n    Node* createNode(K\
-    \ key) {\n        Node *res = new Node();\n        res->child[0] = res->child[1]\
-    \ = res->father = nil;\n        res->key = key;\n        res->size = 1;\n    \
-    \    res->data = e().second;\n        res->lazy = id();\n        return res;\n\
-    \    }\n    void setChild(Node *x, Node *y, int d) {\n        x->child[d] = y;\n\
-    \        if (y != nil) y->father = x;\n    }\n    // Assumption: x is father of\
-    \ y\n    int getDirection(Node *x, Node *y) {\n        assert(y->father == x);\n\
-    \        return x->child[0] == y ? 0 : 1;\n    }\n    // create subtree from keys[l,\
-    \ r-1]\n    Node* createNode(const vector<K>& keys, int l, int r) {\n        if\
-    \ (l >= r) {  // empty\n            return nil;\n        }\n        int mid =\
-    \ (l + r) / 2;\n        Node *p = createNode(keys[mid]);\n        Node *left =\
-    \ createNode(keys, l, mid);\n        Node *right = createNode(keys, mid + 1, r);\n\
-    \n        setChild(p, left, 0);\n        setChild(p, right, 1);\n\n        pushUp(p);\n\
-    \        return p;\n    }\n    void traverse(Node* x, vector<K>& keys) {\n   \
-    \     if (x == nil) return;\n        pushDown(x);\n        traverse(x->child[0],\
-    \ keys);\n        keys.push_back(x->key);\n        traverse(x->child[1], keys);\n\
-    \    }\n    /**\n     * Before:\n     *    y\n     *    |\n     *    x\n     *\
-    \  /\n     * z\n     *  \\\n     *  zchild\n     *\n     * After:\n     *    y\n\
-    \     *    |\n     *    z\n     *     \\\n     *      x\n     *     /\n     *\
-    \  zchild\n     */\n    void rotate(Node *x, int d) {\n        Node *y = x->father;\n\
-    \        Node *z = x->child[d];\n        setChild(x, z->child[d ^ 1], d);\n  \
-    \      setChild(y, z, getDirection(y, x));\n        setChild(z, x, d ^ 1);\n \
-    \       pushUp(x);\n        pushUp(z);\n    }\n    // Make x root of tree\n  \
-    \  Node *splay(Node *x) {\n        if (x == nil) return nil;\n        while (x->father\
-    \ != nil) {\n            Node *y = x->father;\n            Node *z = y->father;\n\
-    \            int dy = getDirection(y, x);\n            int dz = getDirection(z,\
-    \ y);\n            if (z == nil) {\n                rotate(y, dy);\n         \
-    \   } else if (dy == dz) {\n                rotate(z, dz);\n                rotate(y,\
-    \ dy);\n            } else {\n                rotate(y, dy);\n               \
-    \ rotate(z, dz);\n            }\n        }\n        return x;\n    }\n\n    Node*\
-    \ _kth(Node* p, int k) {\n        pushDown(p);\n        // left: [0, left->size\
-    \ - 1]\n        if (k < p->child[0]->size) {\n            return _kth(p->child[0],\
-    \ k);\n        }\n        k -= p->child[0]->size;\n        if (!k) return p;\n\
-    \        return _kth(p->child[1], k - 1);\n    }\n};\n\n////////// Below: example\
-    \ usage\n// Splay tree only need to store keys (no aggregated value / no lazy\
-    \ update)\nstruct KeyOnlyOps {\n    struct S{};\n    struct F{};\n    using Node\
-    \ = node_t<int, S, F>;\n    \n    static S op(__attribute__((unused)) S left,\
-    \ __attribute__((unused)) int key, __attribute__((unused)) S right) {\n      \
-    \  return {};\n    }\n    static pair<int, S> e() {\n        return {-1, {}};\n\
-    \    }\n    static pair<int, S> mapping(__attribute__((unused)) F f, Node* node)\
-    \ {\n        return {node->key, {}};\n    }\n    static F composition(__attribute__((unused))\
-    \ F f, __attribute__((unused)) F g) {\n        return {};\n    }\n    static F\
-    \ id() {\n        return {};\n    }\n};\n\n/* Example:\n    SplayTreeById<\n \
-    \       int,\n        KeyOnlyOps::S,\n        KeyOnlyOps::op,\n        KeyOnlyOps::e,\n\
-    \        KeyOnlyOps::F,\n        KeyOnlyOps::mapping,\n        KeyOnlyOps::composition,\n\
-    \        KeyOnlyOps::id\n    > tree(keys);\n */\n\n\n// For query get max of keys\
-    \ in range\n// No lazy update tags\nstruct MaxQueryOps {\n    static const int\
-    \ INF = 1e9 + 11;\n    struct F{};\n    using Node = node_t<int, int, F>;\n\n\
-    \    static int op(const int& left, int key, const int& right) {\n        return\
-    \ max({left, key, right});\n    }\n    static pair<int, int> e() {\n        return\
-    \ {-1, -INF};\n    }\n    static pair<int, int> mapping(__attribute__((unused))\
-    \ const F& f, Node* node) {\n        return {node->key, node->data};\n    }\n\
-    \    static F composition(__attribute__((unused)) const F& f, __attribute__((unused))\
-    \ const F& g) {\n        return {};\n    }\n    static F id() {\n        return\
-    \ {};\n    }\n};\n/* Example:\n    SplayTreeById<\n        int,\n        int,\n\
-    \        MaxQueryOps::op,\n        MaxQueryOps::e,\n        MaxQueryOps::F,\n\
-    \        MaxQueryOps::mapping,\n        MaxQueryOps::composition,\n        MaxQueryOps::id\n\
-    \    > tree;\n */\n\n// For queries a[i] <- a[i]*mult + add\nstruct RangeAffineOps\
-    \ {\n    struct S {\n        long long sum, sz;\n    };\n    struct F {\n    \
-    \    long long a, b;\n    };\n    using Node = node_t<int, S, F>;\n\n    static\
-    \ const int MOD = 998244353;\n    static S op(const S& left, int key, const S&\
-    \ right) {\n        return S {\n            (left.sum + key + right.sum) % MOD,\n\
-    \            left.sz + 1 + right.sz,\n        };\n    }\n    static pair<int,\
-    \ S> e() {\n        return {0, {0, 0}};\n    }\n    static pair<int, S> mapping(const\
-    \ F& f, Node* node) {\n        return {\n            (f.a * node->key + f.b) %\
-    \ MOD,\n            S {\n                (f.a * node->data.sum + f.b * node->data.sz)\
-    \ % MOD,\n                node->data.sz,\n            }\n        };\n    }\n \
-    \   static F composition(const F&f, const F& g) {\n        return F {\n      \
-    \      f.a * g.a % MOD,\n            (f.a * g.b + f.b) % MOD,\n        };\n  \
-    \  }\n    static F id() {\n        return F {1, 0};\n    }\n};\n\n/* Example\n\
-    \    SplayTreeById<\n        int,\n        RangeAffineOps::S,\n        RangeAffineOps::op,\n\
-    \        RangeAffineOps::e,\n        RangeAffineOps::F,\n        RangeAffineOps::mapping,\n\
-    \        RangeAffineOps::composition,\n        RangeAffineOps::id\n    > tree(keys);\n\
-    \ */\n\n//Example Code\n#define PROBLEM \"https://judge.yosupo.jp/problem/range_reverse_range_sum\"\
-    \n\n#include \"../../template.h\"\n#include \"../splay_tree.h\"\n\nusing S = int64_t;\n\
-    using F = bool;\nusing Node = node_t<int, S, F>;\n\nS op(S left, int key, S right)\
-    \ {\n    return left + key + right;\n}\npair<int, S> e() { return {0, 0}; }\n\
-    pair<int, S> mapping([[maybe_unused]] F f, Node* node) {\n    return {node->key,\
-    \ node->data};\n}\nF composition([[maybe_unused]] F f, [[maybe_unused]] F g) {\
-    \ return false; }\nF id() { return false; }\n\nvoid solve() {\n    int n, q; cin\
-    \ >> n >> q;\n    vector<int> a(n); REP(i,n) cin >> a[i];\n    SplayTreeById<int,\
-    \ S, op, e, F, mapping, composition, id> tree(a);\n\n    while (q--) {\n     \
-    \   int typ; cin >> typ;\n        int l, r; cin >> l >> r;\n\n        if (typ\
-    \ == 0) tree.reverse(l, r);\n        else {\n            cout << tree.prod(l,\
-    \ r) << '\\n';\n        }\n    }\n}"
+    links: []
+  bundledCode: "#line 1 \"Data Structrue/SplayTree.cpp\"\n#include <bits/stdc++.h>\n\
+    using namespace std;\n\n// Define the type for keys and aggregate data\ntypedef\
+    \ long long ll;\n\n// Node structure for the Splay Tree\nstruct Node {\n    int\
+    \ key;        // Value stored in the node\n    ll sum;         // Sum of the subtree\n\
+    \    int size;       // Size of the subtree\n    bool rev;       // Flag for lazy\
+    \ reversal\n    Node* left;     // Left child\n    Node* right;    // Right child\n\
+    \    Node* parent;   // Parent node\n\n    Node(int _key) : key(_key), sum(_key),\
+    \ size(1), rev(false), left(nullptr), right(nullptr), parent(nullptr) {}\n};\n\
+    \n// Utility functions for Splay Tree operations\n\n// Update the current node's\
+    \ aggregate data based on its children\nvoid update(Node* x) {\n    if (!x) return;\n\
+    \    x->size = 1;\n    x->sum = x->key;\n    if (x->left) {\n        x->size +=\
+    \ x->left->size;\n        x->sum += x->left->sum;\n        x->left->parent = x;\n\
+    \    }\n    if (x->right) {\n        x->size += x->right->size;\n        x->sum\
+    \ += x->right->sum;\n        x->right->parent = x;\n    }\n}\n\n// Push down the\
+    \ lazy propagation flags\nvoid push_down(Node* x) {\n    if (x && x->rev) {\n\
+    \        swap(x->left, x->right);\n        if (x->left) x->left->rev ^= true;\n\
+    \        if (x->right) x->right->rev ^= true;\n        x->rev = false;\n    }\n\
+    }\n\n// Rotate operation in Splay Tree\nvoid rotate(Node* x) {\n    Node* p =\
+    \ x->parent;\n    Node* g = p->parent;\n    if (p->left == x) {\n        p->left\
+    \ = x->right;\n        if (x->right) x->right->parent = p;\n        x->right =\
+    \ p;\n    }\n    else {\n        p->right = x->left;\n        if (x->left) x->left->parent\
+    \ = p;\n        x->left = p;\n    }\n    p->parent = x;\n    x->parent = g;\n\
+    \    if (g) {\n        if (g->left == p) g->left = x;\n        else g->right =\
+    \ x;\n    }\n    update(p);\n    update(x);\n}\n\n// Splay operation: bring node\
+    \ x to the root\nvoid splay(Node*& root, Node* x) {\n    if (!x) return;\n   \
+    \ while (x->parent) {\n        Node* p = x->parent;\n        Node* g = p->parent;\n\
+    \        if (g) {\n            if ((g->left == p) == (p->left == x)) rotate(p);\
+    \ // Zig-Zig\n            else rotate(x); // Zig-Zag\n        }\n        rotate(x);\n\
+    \    }\n    root = x;\n}\n\n// Find the k-th node (0-based index)\nNode* find_kth(Node*\
+    \ root, int k) {\n    Node* x = root;\n    while (x) {\n        push_down(x);\n\
+    \        int left_size = x->left ? x->left->size : 0;\n        if (k < left_size)\
+    \ {\n            x = x->left;\n        }\n        else if (k == left_size) {\n\
+    \            splay(root, x);\n            return x;\n        }\n        else {\n\
+    \            k -= left_size + 1;\n            x = x->right;\n        }\n    }\n\
+    \    return nullptr;\n}\n\n// Merge two trees: left and right\nNode* merge(Node*\
+    \ left, Node* right) {\n    if (!left) return right;\n    if (!right) return left;\n\
+    \    // Find the maximum in the left tree\n    Node* x = left;\n    while (x->right)\
+    \ {\n        push_down(x);\n        x = x->right;\n    }\n    splay(left, x);\
+    \ // Bring x to root\n    x->right = right;\n    if (right) right->parent = x;\n\
+    \    update(x);\n    return x;\n}\n\n// Split the tree into [0, k-1] and [k, end]\n\
+    pair<Node*, Node*> split(Node* root, int k) {\n    if (k == 0) return {nullptr,\
+    \ root};\n    Node* x = find_kth(root, k - 1);\n    if (!x) return {nullptr, root};\n\
+    \    splay(root, x);\n    Node* right = x->right;\n    if (right) right->parent\
+    \ = nullptr;\n    x->right = nullptr;\n    update(x);\n    return {x, right};\n\
+    }\n\n// In-order traversal to collect keys (for debugging or output)\nvoid inorder_traversal(Node*\
+    \ x, vector<int>& res) {\n    if (!x) return;\n    push_down(x);\n    inorder_traversal(x->left,\
+    \ res);\n    res.push_back(x->key);\n    inorder_traversal(x->right, res);\n}\n\
+    \n// Splay Tree Class\nstruct SplayTree {\n    Node* root;\n\n    SplayTree()\
+    \ : root(nullptr) {}\n\n    // Insert key at position pos (0-based)\n    void\
+    \ insert(int pos, int key) {\n        Node* new_node = new Node(key);\n      \
+    \  pair<Node*, Node*> splitted = split(root, pos);\n        root = merge(merge(splitted.first,\
+    \ new_node), splitted.second);\n    }\n\n    // Erase node at position pos (0-based)\n\
+    \    void erase(int pos) {\n        Node* x = find_kth(root, pos);\n        if\
+    \ (!x) return;\n        splay(root, x);\n        root = merge(x->left, x->right);\n\
+    \        if (root) root->parent = nullptr;\n        delete x;\n    }\n\n    //\
+    \ Reverse the range [l, r) (0-based)\n    void reverse_range(int l, int r) {\n\
+    \        if (l >= r) return;\n        pair<Node*, Node*> splitted1 = split(root,\
+    \ l);\n        pair<Node*, Node*> splitted2 = split(splitted1.second, r - l);\n\
+    \        if (splitted2.first) splitted2.first->rev ^= true;\n        root = merge(merge(splitted1.first,\
+    \ splitted2.first), splitted2.second);\n    }\n\n    // Get the sum of the range\
+    \ [l, r) (0-based)\n    ll range_sum(int l, int r) {\n        if (l >= r) return\
+    \ 0;\n        pair<Node*, Node*> splitted1 = split(root, l);\n        pair<Node*,\
+    \ Node*> splitted2 = split(splitted1.second, r - l);\n        ll res = splitted2.first\
+    \ ? splitted2.first->sum : 0;\n        root = merge(merge(splitted1.first, splitted2.first),\
+    \ splitted2.second);\n        return res;\n    }\n\n    // Get the maximum value\
+    \ in the range [l, r) (0-based)\n    // (Requires modifying the Node structure\
+    \ and update function to store maximum)\n    // This is a placeholder; implement\
+    \ similarly to range_sum\n    ll range_max(int l, int r) {\n        // Implement\
+    \ if needed\n        return 0;\n    }\n\n    // Get the entire sequence (for debugging)\n\
+    \    vector<int> get_sequence() {\n        vector<int> res;\n        inorder_traversal(root,\
+    \ res);\n        return res;\n    }\n};\n\n"
+  code: "#include <bits/stdc++.h>\nusing namespace std;\n\n// Define the type for\
+    \ keys and aggregate data\ntypedef long long ll;\n\n// Node structure for the\
+    \ Splay Tree\nstruct Node {\n    int key;        // Value stored in the node\n\
+    \    ll sum;         // Sum of the subtree\n    int size;       // Size of the\
+    \ subtree\n    bool rev;       // Flag for lazy reversal\n    Node* left;    \
+    \ // Left child\n    Node* right;    // Right child\n    Node* parent;   // Parent\
+    \ node\n\n    Node(int _key) : key(_key), sum(_key), size(1), rev(false), left(nullptr),\
+    \ right(nullptr), parent(nullptr) {}\n};\n\n// Utility functions for Splay Tree\
+    \ operations\n\n// Update the current node's aggregate data based on its children\n\
+    void update(Node* x) {\n    if (!x) return;\n    x->size = 1;\n    x->sum = x->key;\n\
+    \    if (x->left) {\n        x->size += x->left->size;\n        x->sum += x->left->sum;\n\
+    \        x->left->parent = x;\n    }\n    if (x->right) {\n        x->size +=\
+    \ x->right->size;\n        x->sum += x->right->sum;\n        x->right->parent\
+    \ = x;\n    }\n}\n\n// Push down the lazy propagation flags\nvoid push_down(Node*\
+    \ x) {\n    if (x && x->rev) {\n        swap(x->left, x->right);\n        if (x->left)\
+    \ x->left->rev ^= true;\n        if (x->right) x->right->rev ^= true;\n      \
+    \  x->rev = false;\n    }\n}\n\n// Rotate operation in Splay Tree\nvoid rotate(Node*\
+    \ x) {\n    Node* p = x->parent;\n    Node* g = p->parent;\n    if (p->left ==\
+    \ x) {\n        p->left = x->right;\n        if (x->right) x->right->parent =\
+    \ p;\n        x->right = p;\n    }\n    else {\n        p->right = x->left;\n\
+    \        if (x->left) x->left->parent = p;\n        x->left = p;\n    }\n    p->parent\
+    \ = x;\n    x->parent = g;\n    if (g) {\n        if (g->left == p) g->left =\
+    \ x;\n        else g->right = x;\n    }\n    update(p);\n    update(x);\n}\n\n\
+    // Splay operation: bring node x to the root\nvoid splay(Node*& root, Node* x)\
+    \ {\n    if (!x) return;\n    while (x->parent) {\n        Node* p = x->parent;\n\
+    \        Node* g = p->parent;\n        if (g) {\n            if ((g->left == p)\
+    \ == (p->left == x)) rotate(p); // Zig-Zig\n            else rotate(x); // Zig-Zag\n\
+    \        }\n        rotate(x);\n    }\n    root = x;\n}\n\n// Find the k-th node\
+    \ (0-based index)\nNode* find_kth(Node* root, int k) {\n    Node* x = root;\n\
+    \    while (x) {\n        push_down(x);\n        int left_size = x->left ? x->left->size\
+    \ : 0;\n        if (k < left_size) {\n            x = x->left;\n        }\n  \
+    \      else if (k == left_size) {\n            splay(root, x);\n            return\
+    \ x;\n        }\n        else {\n            k -= left_size + 1;\n           \
+    \ x = x->right;\n        }\n    }\n    return nullptr;\n}\n\n// Merge two trees:\
+    \ left and right\nNode* merge(Node* left, Node* right) {\n    if (!left) return\
+    \ right;\n    if (!right) return left;\n    // Find the maximum in the left tree\n\
+    \    Node* x = left;\n    while (x->right) {\n        push_down(x);\n        x\
+    \ = x->right;\n    }\n    splay(left, x); // Bring x to root\n    x->right = right;\n\
+    \    if (right) right->parent = x;\n    update(x);\n    return x;\n}\n\n// Split\
+    \ the tree into [0, k-1] and [k, end]\npair<Node*, Node*> split(Node* root, int\
+    \ k) {\n    if (k == 0) return {nullptr, root};\n    Node* x = find_kth(root,\
+    \ k - 1);\n    if (!x) return {nullptr, root};\n    splay(root, x);\n    Node*\
+    \ right = x->right;\n    if (right) right->parent = nullptr;\n    x->right = nullptr;\n\
+    \    update(x);\n    return {x, right};\n}\n\n// In-order traversal to collect\
+    \ keys (for debugging or output)\nvoid inorder_traversal(Node* x, vector<int>&\
+    \ res) {\n    if (!x) return;\n    push_down(x);\n    inorder_traversal(x->left,\
+    \ res);\n    res.push_back(x->key);\n    inorder_traversal(x->right, res);\n}\n\
+    \n// Splay Tree Class\nstruct SplayTree {\n    Node* root;\n\n    SplayTree()\
+    \ : root(nullptr) {}\n\n    // Insert key at position pos (0-based)\n    void\
+    \ insert(int pos, int key) {\n        Node* new_node = new Node(key);\n      \
+    \  pair<Node*, Node*> splitted = split(root, pos);\n        root = merge(merge(splitted.first,\
+    \ new_node), splitted.second);\n    }\n\n    // Erase node at position pos (0-based)\n\
+    \    void erase(int pos) {\n        Node* x = find_kth(root, pos);\n        if\
+    \ (!x) return;\n        splay(root, x);\n        root = merge(x->left, x->right);\n\
+    \        if (root) root->parent = nullptr;\n        delete x;\n    }\n\n    //\
+    \ Reverse the range [l, r) (0-based)\n    void reverse_range(int l, int r) {\n\
+    \        if (l >= r) return;\n        pair<Node*, Node*> splitted1 = split(root,\
+    \ l);\n        pair<Node*, Node*> splitted2 = split(splitted1.second, r - l);\n\
+    \        if (splitted2.first) splitted2.first->rev ^= true;\n        root = merge(merge(splitted1.first,\
+    \ splitted2.first), splitted2.second);\n    }\n\n    // Get the sum of the range\
+    \ [l, r) (0-based)\n    ll range_sum(int l, int r) {\n        if (l >= r) return\
+    \ 0;\n        pair<Node*, Node*> splitted1 = split(root, l);\n        pair<Node*,\
+    \ Node*> splitted2 = split(splitted1.second, r - l);\n        ll res = splitted2.first\
+    \ ? splitted2.first->sum : 0;\n        root = merge(merge(splitted1.first, splitted2.first),\
+    \ splitted2.second);\n        return res;\n    }\n\n    // Get the maximum value\
+    \ in the range [l, r) (0-based)\n    // (Requires modifying the Node structure\
+    \ and update function to store maximum)\n    // This is a placeholder; implement\
+    \ similarly to range_sum\n    ll range_max(int l, int r) {\n        // Implement\
+    \ if needed\n        return 0;\n    }\n\n    // Get the entire sequence (for debugging)\n\
+    \    vector<int> get_sequence() {\n        vector<int> res;\n        inorder_traversal(root,\
+    \ res);\n        return res;\n    }\n};\n\n"
   dependsOn: []
   isVerificationFile: false
   path: Data Structrue/SplayTree.cpp
   requiredBy: []
-  timestamp: '1970-01-01 00:00:00+00:00'
+  timestamp: '2024-11-15 23:57:47+07:00'
   verificationStatus: LIBRARY_NO_TESTS
   verifiedWith: []
 documentation_of: Data Structrue/SplayTree.cpp
