@@ -45,19 +45,6 @@ private:
         return d[t] != -1; // has an augmenting path
     }
 
-    ll send_one_flow(int s, int t, ll f = INF)
-    { // send one flow from s->t
-        if (s == t)
-            return f; // bottleneck edge f found
-        auto &[u, idx] = p[t];
-        auto &cap = get<1>(EL[idx]), &flow = get<2>(EL[idx]);
-        ll pushed = send_one_flow(s, u, min(f, cap - flow));
-        flow += pushed;
-        auto &rflow = get<2>(EL[idx ^ 1]); // back edge
-        rflow -= pushed;                   // back flow
-        return pushed;
-    }
-
     ll DFS(int u, int t, ll f = INF)
     { // traverse from s->t
         if ((u == t) || (f == 0))

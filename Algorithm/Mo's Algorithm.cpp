@@ -1,66 +1,97 @@
-// Notes:
-// - queries are [l, r]
-// - add(int array_id) -> void 
-// - remove(int array_id) -> void
-// - get(QueryT query) -> ResultT
-//
-// Tested:
-// - https://www.spoj.com/problems/KDOMINO/ (submission ID: 30602374)
-// - https://www.spoj.com/problems/FREQ2 (submission ID: 30602401)
-//
-// Mo algorithm {{{
-template<typename QueryT, typename ResultT, typename Add, typename Rem, typename Get>
-vector<ResultT> mo(int n, std::vector<QueryT> queries, Add add, Rem rem, Get get) {
-    int q = queries.size();
-    std::vector<ResultT> res(q);
- 
-    // Sort queries in increasing order of (left / SQRT, right)
-    int S = sqrt(n);
-    if (S < 1) S = 1;
- 
-    std::vector<int> query_ids(q);
-    std::iota(query_ids.begin(), query_ids.end(), 0);
-    std::sort(query_ids.begin(), query_ids.end(), [&] (int q1, int q2) {
-            int bucket1 = queries[q1].l / S;
-            int bucket2 = queries[q2].l / S;
-            if (bucket1 != bucket2) return bucket1 < bucket2;
-            else {
-                return bucket1 % 2
-                        ? (queries[q1].r > queries[q2].r)
-                        : (queries[q1].r < queries[q2].r);
-            }
-        });
- 
-    // Answer queries
-    int cur_l = -1, cur_r = -1;
-    for (int qid : query_ids) {
-        // move to this range
-        if (cur_l < 0) {
-            for (int i = queries[qid].l; i <= queries[qid].r; ++i) {
-                add(i);
-            }
-            cur_l = queries[qid].l, cur_r = queries[qid].r;
-        } else {
-            while (cur_l > queries[qid].l) add(--cur_l);
-            while (cur_r < queries[qid].r) add(++cur_r);
-            while (cur_r > queries[qid].r) rem(cur_r--);
-            while (cur_l < queries[qid].l) rem(cur_l++);
-        }
- 
-        res[qid] = get(queries[qid]);
-    }
-    return res;
-}
- 
-// Example
+#include <bits/stdc++.h>
+using namespace std;
+
+// Structure to represent a query
 struct Query {
-    int l, r;  // QueryT must have l, r
+    int l, r, idx; // l: left index, r: right index, idx: original query index
 };
-ostream& operator << (ostream& cout, const Query& q) {
-    cout << "Query: [" << q.l << ", " << q.r << "]";
-    return cout;
+
+// Comparator function to sort queries according to Mo's algorithm
+bool mo_cmp(const Query &a, const Query &b, int block_size) {
+    if (a.l / block_size != b.l / block_size)
+        return a.l / block_size < b.l / block_size;
+    // If in the same block, sort by R value
+    // Alternate sorting order for even and odd blocks to optimize cache
+    if ((a.l / block_size) & 1)
+        return a.r > b.r;
+    else
+        return a.r < b.r;
 }
-// Usage
-// auto res = mo<Query, int, decltype(add), decltype(rem), decltype(get)>
-//        (n, queries, add, rem, get);
-// }}}
+
+// Function to perform Mo's algorithm
+vector<long long> mos_algorithm(int n, vector<Query> &queries, vector<int> &array) {
+    int q = queries.size();
+    vector<long long> answers(q);
+    
+    // Determine block size
+    int block_size = sqrt(n) + 1;
+    
+    // Sort queries using the comparator
+    sort(queries.begin(), queries.end(), [&](const Query &a, const Query &b) -> bool {
+        return mo_cmp(a, b, block_size);
+    });
+    
+    // Initialize current range [curr_l, curr_r]
+    int curr_l = 0, curr_r = -1;
+    
+    // Example: Count of distinct elements
+    // Modify these variables and functions based on the problem
+    int distinct = 0;
+    // Assuming array elements are in the range [1, max_val]
+    int max_val = *max_element(array.begin(), array.end());
+    vector<int> freq(max_val + 1, 0);
+    // Lambda to add an element to the current range
+    auto add = [&](int idx) {
+        freq[array[idx]]++;
+        if (freq[array[idx]] == 1)
+            distinct++;
+    };
+    // Lambda to remove an element from the current range
+    auto remove_fn = [&](int idx) {
+        freq[array[idx]]--;
+        if (freq[array[idx]] == 0)
+            distinct--;
+    };
+    
+    // Process each query
+    for(auto &query : queries){
+        int L = query.l;
+        int R = query.r;
+        
+        // Expand to the left
+        while(curr_l > L) add(--curr_l);
+        // Expand to the right
+        while(curr_r < R) add(++curr_r);
+        // Contract from the left
+        while(curr_l < L) remove_fn(curr_l++);
+        // Contract from the right
+        while(curr_r > R) remove_fn(curr_r--);
+        
+        // Store the answer for the current query
+        answers[query.idx] = distinct; // Replace 'distinct' with the required metric
+    }
+    
+    return answers;
+}
+
+int main(){
+    ios::sync_with_stdio(false);
+    cin.tie(0);
+    
+    int n, q;
+    cin >> n >> q;
+    vector<int> array(n);
+    for(auto &x : array) cin >> x;
+    
+    vector<Query> queries(q);
+    for(int i = 0; i < q; ++i){
+        cin >> queries[i].l >> queries[i].r;
+        queries[i].l--; // Convert to 0-based index
+        queries[i].r--; // Convert to 0-based index
+        queries[i].idx = i;
+    }
+    
+    vector<long long> answers = mos_algorithm(n, queries, array);
+    
+    for(auto &ans : answers) cout << ans << "\n";
+}

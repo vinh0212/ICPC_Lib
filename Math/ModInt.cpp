@@ -143,3 +143,46 @@ template <int MD> std::vector<ModInt<MD>> ModInt<MD>::factorials = {1};
 template <int MD> std::vector<ModInt<MD>> ModInt<MD>::inv_factorials = {1};
 template <int MD> std::vector<ModInt<MD>> ModInt<MD>::invs = {0};
 // }}}
+
+//Example Code
+#include <bits/stdc++.h>
+using namespace std;
+
+// Đặt đoạn mã ModInt ở đây hoặc bao gồm nó từ file khác
+// ...
+
+const int MOD = 1000000007;
+using mint = ModInt<MOD>;
+
+int main() {
+    // Khởi tạo
+    mint a = 10;
+    mint b = 20;
+    mint c = -15;
+    mint d = 1000000017;
+
+    // Hiển thị các giá trị
+    cout << "a = " << a << "\n"; // a = 10
+    cout << "b = " << b << "\n"; // b = 20
+    cout << "c = " << c << "\n"; // c = 1000000007 - 15 = 999999992
+    cout << "d = " << d << "\n"; // d = 10
+
+    // Phép toán
+    mint sum = a + b;
+    mint diff = a - b;
+    mint prod = a * b;
+    mint quot = a / b;
+    mint power = a.pow(5);
+    mint combinations = mint::C(5, 2);
+
+    // Hiển thị kết quả phép toán
+    cout << "a + b = " << sum << "\n";           // 30
+    cout << "a - b = " << diff << "\n";          // 999999997
+    cout << "a * b = " << prod << "\n";          // 200
+    cout << "a / b = " << quot << "\n";          // 100 * inv(20) = 100 * 850000005 = 500000005 mod MOD
+    cout << "a^5 = " << power << "\n";           // 100000
+    cout << "C(5, 2) = " << combinations << "\n"; // 10
+
+    return 0;
+}
+

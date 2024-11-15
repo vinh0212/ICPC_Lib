@@ -10,234 +10,136 @@
 // - (inverse): https://judge.yosupo.jp/problem/inverse_matrix
 // - (det): https://judge.yosupo.jp/problem/matrix_det
 
+#include <bits/stdc++.h>
+using namespace std;
+
+// Define a type alias for clarity
+typedef long long ll;
+
+// Matrix Class
 template<typename T>
 struct Matrix {
     int n_row, n_col;
-    vector<T> x;
+    vector<vector<T>> mat;
 
-    // accessors
-    typename vector<T>::iterator operator [] (int r) {
-        return x.begin() + r * n_col;
-    }
-    inline T get(int i, int j) const { return x[i * n_col + j]; }
-    vector<T> at(int r) const {
-        return vector<T> { x.begin() + r * n_col, x.begin() + (r+1) * n_col };
-    }
+    // Constructor: Initialize n_row x n_col matrix with all elements as zero
+    Matrix(int _n_row, int _n_col) : n_row(_n_row), n_col(_n_col), mat(_n_row, vector<T>(_n_col, 0)) {}
 
-    // constructors
-    Matrix() = default;
-    Matrix(int _n_row, int _n_col) : n_row(_n_row), n_col(_n_col), x(n_row * n_col) {}
-    Matrix(const vector<vector<T>>& d) : n_row(d.size()), n_col(d.size() ? d[0].size() : 0) {
-        for (auto& row : d) std::copy(row.begin(), row.end(), std::back_inserter(x));
-    }
+    // Constructor: Initialize from a 2D vector
+    Matrix(const vector<vector<T>>& d) : n_row(d.size()), n_col(d.empty() ? 0 : d[0].size()), mat(d) {}
 
-    // convert to 2d vec
-    vector<vector<T>> vecvec() const {
-        vector<vector<T>> ret(n_row);
-        for (int i = 0; i < n_row; i++) {
-            std::copy(x.begin() + i*n_col,
-                    x.begin() + (i+1)*n_col,
-                    std::back_inserter(ret[i]));
+    // Static method to create an identity matrix
+    static Matrix identity(int size) {
+        Matrix I(size, size);
+        for(int i = 0; i < size; ++i) {
+            I.mat[i][i] = 1;
         }
-        return ret;
-    }
-    operator vector<vector<T>>() const { return vecvec(); }
-
-    static Matrix identity(int n) {
-        Matrix res(n, n);
-        for (int i = 0; i < n; i++) {
-            res[i][i] = 1;
-        }
-        return res;
+        return I;
     }
 
-    Matrix transpose() const {
-        Matrix res(n_col, n_row);
-        for (int i = 0; i < n_row; i++) {
-            for (int j = 0; j < n_col; j++) {
-                res[j][i] = this->get(i, j);
-            }
-        }
-        return res;
-    }
-
-    Matrix& operator *= (const Matrix& r) { return *this = *this * r; }
-    Matrix operator * (const Matrix& r) const {
-        assert(n_col == r.n_row);
-        Matrix res(n_row, r.n_col);
-
-        for (int i = 0; i < n_row; i++) {
-            for (int k = 0; k < n_col; k++) {
-                for (int j = 0; j < r.n_col; j++) {
-                    res[i][j] += this->get(i, k) * r.get(k, j);
+    // Matrix multiplication
+    Matrix operator* (const Matrix& other) const {
+        assert(n_col == other.n_row);
+        Matrix result(n_row, other.n_col);
+        for(int i = 0; i < n_row; ++i) {
+            for(int k = 0; k < n_col; ++k) {
+                if (mat[i][k] == 0) continue; // Optimization for sparse matrices
+                for(int j = 0; j < other.n_col; ++j) {
+                    result.mat[i][j] += mat[i][k] * other.mat[k][j];
                 }
             }
         }
-        return res;
+        return result;
     }
 
-    Matrix pow(long long n) const {
+    // Matrix exponentiation
+    Matrix pow(long long power) const {
+        assert(n_row == n_col); // Only square matrices can be exponentiated
+        Matrix result = Matrix::identity(n_row);
+        Matrix base = *this;
+        long long p = power;
+        while(p > 0) {
+            if(p & 1) {
+                result = result * base;
+            }
+            base = base * base;
+            p >>= 1;
+        }
+        return result;
+    }
+
+    // Determinant using Gaussian Elimination
+    T determinant() const {
         assert(n_row == n_col);
-        Matrix res = identity(n_row);
-        if (n == 0) return res;
-
-        bool res_is_id = true;
-        for (int i = 63 - __builtin_clzll(n); i >= 0; i--) {
-            if (!res_is_id) res *= res;
-            if ((n >> i) & 1) res *= (*this), res_is_id = false;
-        }
-        return res;
-    }
-
-    // Gauss
-    template <typename T2, typename std::enable_if<std::is_floating_point<T2>::value>::type * = nullptr>
-    static int choose_pivot(const Matrix<T2> &mtr, int h, int c) noexcept {
-        int piv = -1;
-        for (int j = h; j < mtr.n_row; j++) {
-            if (mtr.get(j, c) and (piv < 0 or std::abs(mtr.get(j, c)) > std::abs(mtr.get(piv, c)))) piv = j;
-        }
-        return piv;
-    }
-    template <typename T2, typename std::enable_if<!std::is_floating_point<T2>::value>::type * = nullptr>
-    static int choose_pivot(const Matrix<T2> &mtr, int h, int c) noexcept {
-        for (int j = h; j < mtr.n_row; j++) {
-            if (mtr.get(j, c) != T(0)) return j;
-        }
-        return -1;
-    }
-
-    // return upper triangle matrix
-    [[nodiscard]] Matrix gauss() const {
-        int c = 0;
-        Matrix mtr(*this);
-        vector<int> ws;
-        ws.reserve(n_col);
-
-        for (int h = 0; h < n_row; h++) {
-            if (c == n_col) break;
-            int piv = choose_pivot(mtr, h, c);
-            if (piv == -1) {
-                c++;
-                h--;
-                continue;
-            }
-            if (h != piv) {
-                for (int w = 0; w < n_col; w++) {
-                    swap(mtr[piv][w], mtr[h][w]);
-                    mtr[piv][w] *= -1; // for determinant
+        int N = n_row;
+        Matrix<T> mat_copy = *this;
+        T det = 1;
+        for(int i = 0; i < N; ++i){
+            // Find pivot
+            int pivot = i;
+            for(int j = i; j < N; ++j){
+                if(abs(mat_copy.mat[j][i]) > abs(mat_copy.mat[pivot][i])){
+                    pivot = j;
                 }
             }
-            ws.clear();
-            for (int w = c; w < n_col; w++) {
-                if (mtr[h][w] != 0) ws.emplace_back(w);
+            if(mat_copy.mat[pivot][i] == 0){
+                return 0;
             }
-            const T hcinv = T(1) / mtr[h][c];
-            for (int hh = 0; hh < n_row; hh++) {
-                if (hh != h) {
-                    const T coeff = mtr[hh][c] * hcinv;
-                    for (auto w : ws) mtr[hh][w] -= mtr[h][w] * coeff;
-                    mtr[hh][c] = 0;
+            if(pivot != i){
+                swap(mat_copy.mat[i], mat_copy.mat[pivot]);
+                det *= -1;
+            }
+            det *= mat_copy.mat[i][i];
+            // Eliminate below
+            for(int j = i + 1; j < N; ++j){
+                T factor = mat_copy.mat[j][i] / mat_copy.mat[i][i];
+                for(int k = i; k < N; ++k){
+                    mat_copy.mat[j][k] -= factor * mat_copy.mat[i][k];
                 }
             }
-            c++;
         }
-        return mtr;
+        return det;
     }
 
-    // For upper triangle matrix
-    T det() const {
-        T ret = 1;
-        for (int i = 0; i < n_row; i++) {
-            ret *= get(i, i);
-        }
-        return ret;
-    }
-
-    // return rank of inverse matrix. If rank < n -> not invertible
-    int inverse() {
+    // Inversion using Gaussian Elimination (for floating points)
+    // Returns true if inverse exists, false otherwise
+    bool inverse(Matrix& inv) const {
         assert(n_row == n_col);
-        vector<vector<T>> ret = identity(n_row), tmp = *this;
-        int rank = 0;
+        int N = n_row;
+        Matrix<T> mat_copy = *this;
+        inv = Matrix<T>::identity(N);
 
-        for (int i = 0; i < n_row; i++) {
-            int ti = i;
-            while (ti < n_row && tmp[ti][i] == 0) ++ti;
-            if (ti == n_row) continue;
-            else ++rank;
-
-            ret[i].swap(ret[ti]);
-            tmp[i].swap(tmp[ti]);
-
-            T inv = T(1) / tmp[i][i];
-            for (int j = 0; j < n_col; j++) ret[i][j] *= inv;
-            for (int j = i+1; j < n_col; j++) tmp[i][j] *= inv;
-
-            for (int h = 0; h < n_row; h++) {
-                if (i == h) continue;
-                const T c = -tmp[h][i];
-                for (int j = 0; j < n_col; j++) ret[h][j] += ret[i][j] * c;
-                for (int j = i+1; j < n_col; j++) tmp[h][j] += tmp[i][j] * c;
+        for(int i = 0; i < N; ++i){
+            // Find pivot
+            int pivot = i;
+            for(int j = i; j < N; ++j){
+                if(abs(mat_copy.mat[j][i]) > abs(mat_copy.mat[pivot][i])){
+                    pivot = j;
+                }
+            }
+            if(mat_copy.mat[pivot][i] == 0){
+                return false; // Singular matrix
+            }
+            if(pivot != i){
+                swap(mat_copy.mat[i], mat_copy.mat[pivot]);
+                swap(inv.mat[i], inv.mat[pivot]);
+            }
+            // Normalize pivot row
+            T factor = mat_copy.mat[i][i];
+            for(int k = 0; k < N; ++k){
+                mat_copy.mat[i][k] /= factor;
+                inv.mat[i][k] /= factor;
+            }
+            // Eliminate other rows
+            for(int j = 0; j < N; ++j){
+                if(j == i) continue;
+                T factor = mat_copy.mat[j][i];
+                for(int k = 0; k < N; ++k){
+                    mat_copy.mat[j][k] -= factor * mat_copy.mat[i][k];
+                    inv.mat[j][k] -= factor * inv.mat[i][k];
+                }
             }
         }
-
-        *this = ret;
-        return rank;
-    }
-
-    // sum of all elements in this matrix
-    T sum_all() {
-        return submatrix_sum(0, 0, n_row, n_col);
-    }
-
-    // sum of [r1, r2) x [c1, c2)
-    T submatrix_sum(int r1, int c1, int r2, int c2) {
-        T res {0};
-        for (int r = r1; r < r2; ++r) {
-            res += std::accumulate(
-                    x.begin() + r * n_col + c1,
-                    x.begin() + r * n_col + c2,
-                    T{0});
-        }
-        return res;
+        return true;
     }
 };
-template<typename T>
-ostream& operator << (ostream& cout, const Matrix<T>& m) {
-    cout << m.n_row << ' ' << m.n_col << endl;
-    for (int i = 0; i < m.n_row; ++i) {
-        cout << "row [" << i << "] = " << m.at(i) << endl;
-    }
-    return cout;
-}
-// }}}
-//Example Code
-#define PROBLEM "https://judge.yosupo.jp/problem/inverse_matrix"
-
-#include <bits/stdc++.h>
-#include "../../atcoder/modint.hpp"
-using namespace std;
-using namespace atcoder;
-
-#include "../Matrix.h"
-#include "../../buffered_reader.h"
-
-#define REP(i, a) for (int i = 0, _##i = (a); i < _##i; ++i)
-
-int32_t main() {
-    ios::sync_with_stdio(0); cin.tie(0);
-    int n = IO::get<int>();
-    Matrix<modint998244353> a(n, n);
-    REP(i,n) REP(j,n) {
-        int x = IO::get<int>();
-        a[i][j] = x;
-    }
-    int rank = a.inverse();
-    if (rank < n) cout << -1 << '\n';
-    else {
-        REP(i,n) {
-            REP(j,n) cout << a[i][j].val() << ' ';
-            cout << '\n';
-        }
-    }
-    return 0;
-}

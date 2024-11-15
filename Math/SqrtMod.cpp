@@ -1,6 +1,6 @@
 // sqrtMod(X, q), with q is prime, returns:
 // a where a*a = X
-// -1 if no solution
+// -1 if no solution (X^2 == Y (mod P))
 //
 // Note:
 // - there are either 1 or 2 solutions, a and p - a (which can be same).
